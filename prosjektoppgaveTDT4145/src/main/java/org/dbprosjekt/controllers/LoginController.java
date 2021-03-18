@@ -8,74 +8,74 @@ import org.dbprosjekt.App;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
 
 public class LoginController {
-  @FXML
-  private TextField emailTextInput;
+    @FXML
+    private TextField emailTextInput;
 
-  @FXML
-  private TextField passwordTextInput;
+    @FXML
+    private TextField passwordTextInput;
 
-  @FXML
-  private TextField regEmailTextInput;
+    @FXML
+    private TextField regEmailTextInput;
 
-  @FXML
-  private TextField regPasswordTextInput;
+    @FXML
+    private TextField regPasswordTextInput;
 
-  @FXML
-  private TextField regUsernameTextInput;
+    @FXML
+    private TextField regUsernameTextInput;
 
-  @FXML
-  private Button signInButton;
+    @FXML
+    private Button signInButton;
 
-  @FXML
-  private Text errorText;
+    @FXML
+    private Text errorText;
 
-  @FXML
-  private Text regErrorText;
+    @FXML
+    private Text regErrorText;
 
-  @FXML
-  private void signIn() {
-    String email = emailTextInput.getText();
-    String password = passwordTextInput.getText();
+    @FXML
+    private void signIn() {
+        String email = emailTextInput.getText();
+        String password = passwordTextInput.getText();
 
 
-    DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
-    String queryString = "select * from user where email='" + email +  "' and password='" + password + "'";
+        DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
+        String queryString = "select * from user where email='" + email + "' and password='" + password + "'";
 
-    if (queryGenerator.queryHasResultRows(queryString))
-      System.out.println("Signed in");
-    else{
-      System.out.println("No such user");
-      errorText.setText("Invalid username or password");
+        if (queryGenerator.queryHasResultRows(queryString))
+            System.out.println("Signed in");
+        else {
+            System.out.println("No such user");
+            errorText.setText("Invalid username or password");
+        }
     }
-  }
-  @FXML
-  private void register(){
-    boolean emailInUse = false;
-    boolean usernameInUse = false;
 
-    String email = regEmailTextInput.getText();
-    String password = regPasswordTextInput.getText();
-    String username = regUsernameTextInput.getText();
+    @FXML
+    private void register() {
+        boolean emailInUse = false;
+        boolean usernameInUse = false;
 
-    DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
-    String queryString = "select * from user where email='" + email +"'";
+        String email = regEmailTextInput.getText();
+        String password = regPasswordTextInput.getText();
+        String username = regUsernameTextInput.getText();
 
-    if (queryGenerator.queryHasResultRows(queryString))
-      emailInUse = true;
-    queryString = "select * from user where username='" + username +"'";
-    if ((queryGenerator.queryHasResultRows(queryString)))
-      usernameInUse = true;
-    if (emailInUse){
-      if (usernameInUse)
-        regErrorText.setText("Email and username already in use");
-      else
-        regErrorText.setText("Email already in use");
+        DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
+        String queryString = "select * from user where email='" + email + "'";
+
+        if (queryGenerator.queryHasResultRows(queryString))
+            emailInUse = true;
+        queryString = "select * from user where username='" + username + "'";
+        if ((queryGenerator.queryHasResultRows(queryString)))
+            usernameInUse = true;
+        if (emailInUse) {
+            if (usernameInUse)
+                regErrorText.setText("Email and username already in use");
+            else
+                regErrorText.setText("Email already in use");
+        } else if (usernameInUse)
+            regErrorText.setText("Username already in use");
+        else {
+            regErrorText.setText("Registration successful");
+            queryGenerator.insertUser(email, username, password);
+        }
     }
-    else if (usernameInUse)
-      regErrorText.setText("Username already in use");
-    else{
-      regErrorText.setText("Registration successful");
-      queryGenerator.insertUser(email,username,password);
-    }
-  }
 }
