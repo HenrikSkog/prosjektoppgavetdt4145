@@ -11,6 +11,7 @@
 <VBox xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dbprosjekt.controllers.ProgramController">
     <ToolBar>
         <ComboBox></ComboBox>
+        <Button onAction="#toNewSubject">New Subject</Button>
         <Button onAction="#toNewCourse">New Course</Button>
         <Button onAction="#toNewFolder">New Folder</Button>
         <Button>Manage users</Button>
