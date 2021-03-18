@@ -11,5 +11,15 @@
         <property name="serverTimezone" value="GMT+1" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="@10.10.105.97" uuid="04e44380-46bb-4172-8083-0f878b38d189">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://10.10.105.97:3306</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+      <driver-properties>
+        <property name="serverTimezone" value="GMT+1" />
+      </driver-properties>
+    </data-source>
   </component>
 </project>

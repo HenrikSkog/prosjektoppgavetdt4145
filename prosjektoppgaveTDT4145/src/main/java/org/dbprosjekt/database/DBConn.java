@@ -12,7 +12,7 @@ public class DBConn {
 
   public void connect() {
     try {
-      Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+      //Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
       var dbConnString = new StringBuilder();
 
       dbConnString.append("jdbc:mysql://10.10.105.97:3306/");
@@ -20,6 +20,7 @@ public class DBConn {
       dbConnString.append("?useSSL=false");
       dbConnString.append("&allowPublicKeyRetrieval=true");
       dbConnString.append("&serverTimezone=Europe/Oslo");
+
 
 
       conn = DriverManager.getConnection(dbConnString.toString(), "root", "pAssord123");

@@ -50,4 +50,14 @@ public class DatabaseQueryGenerator extends DBConn {
       throw new RuntimeException(e);
     }
   }
+  public void insertUser(String email, String username, String password){
+    try {
+      Statement statement = conn.createStatement();
+      String queryString = "insert into user(email, username, password, type) values('"+email+"','"+username+"','"+password+"','student')";
+      System.out.println(queryString);
+      statement.execute(queryString);
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+  }
 }

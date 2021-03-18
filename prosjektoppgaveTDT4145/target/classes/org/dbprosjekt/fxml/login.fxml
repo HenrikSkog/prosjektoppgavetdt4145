@@ -8,9 +8,17 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dbprosjekt.controllers.LoginController">
    <children>
-      <TextField layoutX="281.0" layoutY="158.0" fx:id="emailTextInput"/>
-      <TextField layoutX="139.0" layoutY="242.0" fx:id="passwordTextInput"/>
-      <Button layoutX="338.0" layoutY="284.0" mnemonicParsing="false" text="Button" onAction="#signin"/>
-      <Text layoutX="139.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Logg inn a" />
+      <TextField layoutX="100" layoutY="100" fx:id="emailTextInput" promptText="Email"/>
+      <TextField layoutX="100" layoutY="200" fx:id="passwordTextInput" promptText="Password"/>
+      <Button layoutX="100" layoutY="300" mnemonicParsing="false" text="Log In" onAction="#signIn"/>
+      <Text layoutX="100" layoutY="50" strokeType="OUTSIDE" strokeWidth="0.0" text="Log in" />
+      <Text layoutX="100" layoutY="350" fx:id="errorText"/>
+
+      <Text layoutX="300" layoutY="50" strokeType="OUTSIDE" strokeWidth="0.0" text="Register"/>
+      <TextField layoutX="300" layoutY="100" fx:id="regEmailTextInput" promptText="Email"/>
+      <TextField layoutX="300" layoutY="150" fx:id="regUsernameTextInput" promptText="Username"/>
+      <TextField layoutX="300" layoutY="200" fx:id="regPasswordTextInput" promptText="Password"/>
+      <Button layoutX="300" layoutY="300" mnemonicParsing="false" text="Register" onAction="#register"/>
+      <Text layoutX="300" layoutY="350" fx:id="regErrorText"/>
    </children>
 </AnchorPane>
