@@ -4514,7 +4514,7 @@ SELECT|sys.sys_config
     </column>
     <column id="1111" parent="366" name="SubjectID">
       <Position>2</Position>
-      <DataType>int|0s</DataType>
+      <DataType>varchar(30)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
     <column id="1112" parent="366" name="Term">
@@ -4550,7 +4550,7 @@ Term</RefColNames>
     </foreign-key>
     <column id="1117" parent="367" name="SubjectID">
       <Position>1</Position>
-      <DataType>int|0s</DataType>
+      <DataType>varchar(30)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
     <column id="1118" parent="367" name="Term">
@@ -4577,6 +4577,7 @@ Term</ColNames>
       <Position>1</Position>
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
     </column>
     <column id="1123" parent="368" name="Name">
       <Position>2</Position>
@@ -4588,7 +4589,7 @@ Term</ColNames>
     </column>
     <column id="1125" parent="368" name="SubjectID">
       <Position>4</Position>
-      <DataType>int|0s</DataType>
+      <DataType>varchar(30)|0s</DataType>
     </column>
     <column id="1126" parent="368" name="Term">
       <Position>5</Position>
@@ -4631,7 +4632,7 @@ Term</RefColNames>
     </column>
     <column id="1133" parent="369" name="SubjectID">
       <Position>2</Position>
-      <DataType>int|0s</DataType>
+      <DataType>varchar(30)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
     <column id="1134" parent="369" name="Term">
@@ -4669,6 +4670,7 @@ Term</RefColNames>
       <Position>1</Position>
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
     </column>
     <column id="1140" parent="370" name="Text">
       <Position>2</Position>
@@ -4767,7 +4769,7 @@ LinkID</ColNames>
     </foreign-key>
     <column id="1159" parent="373" name="SubjectID">
       <Position>1</Position>
-      <DataType>int|0s</DataType>
+      <DataType>varchar(30)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
     <column id="1160" parent="373" name="name">
