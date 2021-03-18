@@ -11,6 +11,8 @@
 <VBox xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dbprosjekt.controllers.ProgramController">
     <ToolBar>
         <ComboBox></ComboBox>
+        <Button onAction="#toNewCourse">New Course</Button>
+        <Button onAction="#toNewFolder">New Folder</Button>
         <Button>Manage users</Button>
         <Button>New Post</Button>
         <Button>View Statistics</Button>
@@ -18,97 +20,13 @@
     <SplitPane>
         <ScrollPane fitToHeight="true">
             <VBox>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
+
             </VBox>
         </ScrollPane>
 
         <ScrollPane fitToHeight="true">
             <VBox>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
-                <Text text="hai dette er programmet"/>
+
             </VBox>
         </ScrollPane>
     </SplitPane>
