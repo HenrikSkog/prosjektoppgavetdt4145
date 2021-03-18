@@ -61,4 +61,13 @@ public class DatabaseQueryGenerator extends DBConn {
             System.out.println(e);
         }
     }
+
+    public void insertPost(String title, String username, String text, boolean isAnonymus) {
+        String anonymusStr;
+        if(isAnonymus) anonymusStr = "true"; else anonymusStr = "false";
+
+
+
+        String queryString = "insert into Post(text, date, time, isAnynonymus, UserID) values('" + text + "',' currdate(), currtime(),"  + "," + anonymusStr + "','student')";
+    }
 }
