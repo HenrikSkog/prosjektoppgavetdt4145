@@ -7,6 +7,8 @@ import javafx.scene.text.Text;
 import org.dbprosjekt.App;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
 
+import java.io.IOException;
+
 public class LoginController {
     @FXML
     private TextField emailTextInput;
@@ -33,7 +35,7 @@ public class LoginController {
     private Text regErrorText;
 
     @FXML
-    private void signIn() {
+    private void signIn() throws IOException {
         String email = emailTextInput.getText();
         String password = passwordTextInput.getText();
 
@@ -41,8 +43,10 @@ public class LoginController {
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
         String queryString = "select * from user where email='" + email + "' and password='" + password + "'";
 
-        if (queryGenerator.queryHasResultRows(queryString))
+        if (queryGenerator.queryHasResultRows(queryString)){
             System.out.println("Signed in");
+            App.setRoot("program");
+        }
         else {
             System.out.println("No such user");
             errorText.setText("Invalid username or password");
@@ -50,7 +54,7 @@ public class LoginController {
     }
 
     @FXML
-    private void register() {
+    private void register() throws IOException {
         boolean emailInUse = false;
         boolean usernameInUse = false;
 
@@ -76,6 +80,7 @@ public class LoginController {
         else {
             regErrorText.setText("Registration successful");
             queryGenerator.insertUser(email, username, password);
+            App.setRoot("program");
         }
     }
 }
