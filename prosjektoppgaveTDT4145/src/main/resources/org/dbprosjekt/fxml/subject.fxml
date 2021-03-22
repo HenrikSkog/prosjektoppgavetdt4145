@@ -14,5 +14,6 @@
         <TextField layoutX="100" layoutY="300" fx:id="subjectIdInput" promptText="Subject ID"/>
         <Button layoutX="100" layoutY="350" onAction="#createSubject">Create subject</Button>
         <Text layoutX="100" layoutY="400" fx:id="errorMessage"/>
+        <Button onAction="#goBack" layoutY="100" layoutX="300" text="Back" fx:id="back"/>
     </children>
 </AnchorPane>

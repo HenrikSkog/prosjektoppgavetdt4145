@@ -25,5 +25,6 @@
         <CheckBox layoutX="100" layoutY="350" fx:id="allowsAnonymous" text="Allow Anonymous Posts"/>
         <Button onAction="#createCourse" layoutX="100" layoutY="400" text="Create Course"/>
         <Text fx:id="errorMessage" layoutX="100" layoutY="450"/>
+        <Button fx:id="back" text="Back" layoutX="300" layoutY="100" onAction="#goBack"></Button>
     </children>
 </AnchorPane>
