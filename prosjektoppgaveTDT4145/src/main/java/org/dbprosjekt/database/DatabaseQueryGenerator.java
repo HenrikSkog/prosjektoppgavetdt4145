@@ -1,6 +1,7 @@
 package org.dbprosjekt.database;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,12 +63,12 @@ public class DatabaseQueryGenerator extends DBConn {
         }
     }
 
-    public void insertPost(String title, String username, String text, boolean isAnonymus) {
+    public void insertPost(String title, String email, String text, boolean isAnonymus) {
         String anonymusStr;
         if(isAnonymus) anonymusStr = "true"; else anonymusStr = "false";
 
+        String queryString = "insert into post(text, date, time, isAnonymus, author) values(" + text + ", curdate(), curtime()," + anonymusStr + "," + email + "));";
 
-
-        String queryString = "insert into Post(text, date, time, isAnynonymus, UserID) values('" + text + "',' currdate(), currtime(),"  + "," + anonymusStr + "','student')";
+        System.out.println(queryString);
     }
 }
