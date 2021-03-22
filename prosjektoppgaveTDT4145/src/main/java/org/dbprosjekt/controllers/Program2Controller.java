@@ -77,6 +77,16 @@ public class Program2Controller {
 
         Button newPost = new Button();
         newPost.setText("New Post");
+        newPost.setOnAction(event -> {
+            try {
+                if(Session.getCourseID() != null)
+                    App.setRoot("newpost");
+                else
+                    errorMessage.setText("Please select a course");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        });
 
         Button viewStats = new Button();
         viewStats.setText("View Statistics");
@@ -118,7 +128,6 @@ public class Program2Controller {
         ResultSet rs = queryGenerator.query(queryString);
         ArrayList<Node> nodes = new ArrayList<>();
         while(rs.next()){
-            System.out.println(rs.getInt("FolderID"));
             if (!Session.getFolderPath().contains(rs.getInt("FolderID"))){
                 nodes.add(new Button(rs.getString("Name")+" "+rs.getString("FolderID")));
             }
@@ -129,7 +138,6 @@ public class Program2Controller {
         return nodes;
     }
     private static ArrayList<Node> subFolders(int parentID, int depth) throws SQLException {
-        System.out.println(parentID);
         String queryString = "select FolderID, Name from folder where ParentID="+parentID;
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
         ResultSet rs = queryGenerator.query(queryString);
