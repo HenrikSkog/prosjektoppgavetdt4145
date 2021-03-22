@@ -1,7 +1,8 @@
 package org.dbprosjekt.database;
 
+import org.dbprosjekt.controllers.Program2Controller;
+
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +43,9 @@ public class DatabaseQueryGenerator extends DBConn {
 
     public boolean queryHasResultRows(String queryString) {
         var rs = query(queryString);
+        System.out.println(rs);
+        if (rs==null)
+            return false;
         try {
             if (rs.isBeforeFirst()) {
                 return true;
@@ -55,20 +59,49 @@ public class DatabaseQueryGenerator extends DBConn {
     public void insertUser(String email, String username, String password) {
         try {
             Statement statement = conn.createStatement();
-            String queryString = "insert into user(email, username, password, type) values('" + email + "','" + username + "','" + password + "','student')";
+            String queryString = "insert into User(Email, Username, Password, Type) values('" + email + "','" + username + "','" + password + "','student')";
             System.out.println(queryString);
             statement.execute(queryString);
         } catch (Exception e) {
             System.out.println(e);
         }
     }
-
-    public void insertPost(String title, String email, String text, boolean isAnonymus) {
-        String anonymusStr;
-        if(isAnonymus) anonymusStr = "true"; else anonymusStr = "false";
-
-        String queryString = "insert into post(text, date, time, isAnonymus, author) values(" + text + ", curdate(), curtime()," + anonymusStr + "," + email + "));";
-
-        System.out.println(queryString);
+    public void insertSubject(String id, String name){
+        try {
+            Statement statement = conn.createStatement();
+            String queryString = "insert into Subject(SubjectID, name ) values('" + id + "','" + name + "')";
+            System.out.println(queryString);
+            statement.execute(queryString);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    public void insertCourse(String id, String term, boolean allowsAnonymous){
+        try {
+            Statement statement = conn.createStatement();
+            String queryString = "insert into Course(SubjectID, Term, AllowsAnonymous) values('" + id + "','" + term + "',"+allowsAnonymous+")";
+            System.out.println(queryString);
+            statement.execute(queryString);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    public void insertFolder(String name){
+        String queryString = "";
+        try {
+            String term = Session.getTerm();
+            String courseID = Session.getCourseID();
+            Statement statement = conn.createStatement();
+            if(Session.getFolderPath().size()==0){
+                queryString = "insert into Folder(FolderID,Name,ParentID,SubjectID,Term) values(null,'"+name+"',null,'"+courseID+"','"+term+"')";
+            }
+            else{
+                queryString = "insert into Folder(FolderID,Name,ParentID,SubjectID,Term) values(null,'"+name+"','"+Session.getCurrentFolderID()+"',null,null)";
+            }
+            statement.execute(queryString);
+            Program2Controller.initialize();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }

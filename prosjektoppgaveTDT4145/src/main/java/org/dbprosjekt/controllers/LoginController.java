@@ -4,10 +4,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import org.dbprosjekt.App;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
+import org.dbprosjekt.database.Session;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class LoginController {
     @FXML
@@ -35,17 +36,18 @@ public class LoginController {
     private Text regErrorText;
 
     @FXML
-    private void signIn() throws IOException {
+    private void signIn() throws IOException, SQLException {
         String email = emailTextInput.getText();
         String password = passwordTextInput.getText();
 
 
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
-        String queryString = "select * from user where email='" + email + "' and password='" + password + "'";
+        String queryString = "select * from User where email='" + email + "' and password='" + password + "'";
 
         if (queryGenerator.queryHasResultRows(queryString)){
             System.out.println("Signed in");
-            App.setRoot("program");
+            Session.setUserID(email);
+            Program2Controller.initialize();
         }
         else {
             System.out.println("No such user");
@@ -54,7 +56,7 @@ public class LoginController {
     }
 
     @FXML
-    private void register() throws IOException {
+    private void register() throws IOException, SQLException {
         boolean emailInUse = false;
         boolean usernameInUse = false;
 
@@ -63,11 +65,11 @@ public class LoginController {
         String username = regUsernameTextInput.getText();
 
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
-        String queryString = "select * from user where email='" + email + "'";
+        String queryString = "select * from User where email='" + email + "'";
 
         if (queryGenerator.queryHasResultRows(queryString))
             emailInUse = true;
-        queryString = "select * from user where username='" + username + "'";
+        queryString = "select * from User where username='" + username + "'";
         if ((queryGenerator.queryHasResultRows(queryString)))
             usernameInUse = true;
         if (emailInUse) {
@@ -80,7 +82,8 @@ public class LoginController {
         else {
             regErrorText.setText("Registration successful");
             queryGenerator.insertUser(email, username, password);
-            App.setRoot("program");
+            Session.setUserID(email);
+            Program2Controller.initialize();
         }
     }
 }
