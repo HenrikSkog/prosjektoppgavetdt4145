@@ -9,6 +9,19 @@ public class Course {
         this.name = name;
         this.term = term;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getTerm() {
+        return term;
+    }
+
     public String toString(){
         return name + " " + term;
     }

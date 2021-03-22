@@ -4,8 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import org.dbprosjekt.App;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
+import org.dbprosjekt.database.Session;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -46,8 +46,8 @@ public class LoginController {
 
         if (queryGenerator.queryHasResultRows(queryString)){
             System.out.println("Signed in");
-            ProgramController.update();
-            App.setRoot("program");
+            Session.setUserID(email);
+            Program2Controller.initialize();
         }
         else {
             System.out.println("No such user");
@@ -82,8 +82,8 @@ public class LoginController {
         else {
             regErrorText.setText("Registration successful");
             queryGenerator.insertUser(email, username, password);
-            ProgramController.update();
-            App.setRoot("program");
+            Session.setUserID(email);
+            Program2Controller.initialize();
         }
     }
 }

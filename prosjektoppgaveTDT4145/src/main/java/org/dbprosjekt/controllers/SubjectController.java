@@ -1,15 +1,12 @@
 package org.dbprosjekt.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import org.dbprosjekt.App;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class SubjectController {
     @FXML
@@ -29,8 +26,7 @@ public class SubjectController {
         }
         else{
             queryGenerator.insertSubject(id, name);
-            ProgramController.update();
-            App.setRoot("program");
+            Program2Controller.initialize();
         }
     }
 }

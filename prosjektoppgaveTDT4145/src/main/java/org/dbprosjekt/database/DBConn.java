@@ -23,7 +23,6 @@ public class DBConn {
 
             System.out.println(dbConnString);
             conn = DriverManager.getConnection(dbConnString.toString(), "halvor", "O^o]FcUwpHbIQ=^KXL!%HW6I");
-            System.out.println(2);
         } catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException("Unable to connect", e);

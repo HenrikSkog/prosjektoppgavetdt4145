@@ -1,5 +1,7 @@
 package org.dbprosjekt.database;
 
+import org.dbprosjekt.controllers.Program2Controller;
+
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -80,6 +82,24 @@ public class DatabaseQueryGenerator extends DBConn {
             String queryString = "insert into Course(SubjectID, Term, AllowsAnonymous) values('" + id + "','" + term + "',"+allowsAnonymous+")";
             System.out.println(queryString);
             statement.execute(queryString);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    public void insertFolder(String name){
+        String queryString = "";
+        try {
+            String term = Session.getTerm();
+            String courseID = Session.getCourseID();
+            Statement statement = conn.createStatement();
+            if(Session.getFolderPath().size()==0){
+                queryString = "insert into Folder(FolderID,Name,ParentID,SubjectID,Term) values(null,'"+name+"',null,'"+courseID+"','"+term+"')";
+            }
+            else{
+                queryString = "insert into Folder(FolderID,Name,ParentID,SubjectID,Term) values(null,'"+name+"','"+Session.getCurrentFolderID()+"',null,null)";
+            }
+            statement.execute(queryString);
+            Program2Controller.initialize();
         } catch (Exception e) {
             System.out.println(e);
         }

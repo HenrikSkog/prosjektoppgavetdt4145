@@ -22,7 +22,8 @@ public class ProgramController {
     @FXML
     private static ComboBox<Course> dropDown;
 
-    @FXML private static ToolBar toolBar;
+    @FXML
+    private static ToolBar toolBar;
 
     @FXML
     private void toNewFolder() throws IOException {
@@ -51,8 +52,9 @@ public class ProgramController {
         for(int i = 0; i<courses.size(); i++){
             c[i] = courses.get(i);
         }
+        ComboBox<Course> combo = new ComboBox<Course>();
         ObservableList<Course> list = FXCollections.observableArrayList(c);
-//        dropDown.setItems(list);
-
+        combo.setItems(list);
+        toolBar.getItems();
     }
 }
