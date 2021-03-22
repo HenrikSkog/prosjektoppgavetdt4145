@@ -41,6 +41,9 @@ public class DatabaseQueryGenerator extends DBConn {
 
     public boolean queryHasResultRows(String queryString) {
         var rs = query(queryString);
+        System.out.println(rs);
+        if (rs==null)
+            return false;
         try {
             if (rs.isBeforeFirst()) {
                 return true;
@@ -54,7 +57,27 @@ public class DatabaseQueryGenerator extends DBConn {
     public void insertUser(String email, String username, String password) {
         try {
             Statement statement = conn.createStatement();
-            String queryString = "insert into user(email, username, password, type) values('" + email + "','" + username + "','" + password + "','student')";
+            String queryString = "insert into User(Email, Username, Password, Type) values('" + email + "','" + username + "','" + password + "','student')";
+            System.out.println(queryString);
+            statement.execute(queryString);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    public void insertSubject(String id, String name){
+        try {
+            Statement statement = conn.createStatement();
+            String queryString = "insert into Subject(SubjectID, name ) values('" + id + "','" + name + "')";
+            System.out.println(queryString);
+            statement.execute(queryString);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    public void insertCourse(String id, String term, boolean allowsAnonymous){
+        try {
+            Statement statement = conn.createStatement();
+            String queryString = "insert into Course(SubjectID, Term, AllowsAnonymous) values('" + id + "','" + term + "',"+allowsAnonymous+")";
             System.out.println(queryString);
             statement.execute(queryString);
         } catch (Exception e) {

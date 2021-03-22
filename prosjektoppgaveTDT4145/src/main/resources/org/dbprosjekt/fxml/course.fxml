@@ -10,7 +10,7 @@
 <AnchorPane xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dbprosjekt.controllers.CourseController">
     <children>
         <Text layoutX="100" layoutY="100">Create a new course</Text>
-        <RadioButton layoutX="100" layoutY="200" text="Fall">
+        <RadioButton layoutX="100" layoutY="200" text="Fall" selected="true">
             <toggleGroup>
                 <ToggleGroup fx:id="semester"/>
             </toggleGroup>
@@ -20,6 +20,10 @@
                 <fx:reference source="semester"/>
             </toggleGroup>
         </RadioButton>
+        <Spinner promptText="Year" layoutX="100" layoutY="250" initialValue="2021" min="1900" max="2100" fx:id="semYear"/>
         <TextField layoutX="100" layoutY="300" fx:id="courseIDInput" promptText="CourseID"/>
+        <CheckBox layoutX="100" layoutY="350" fx:id="allowsAnonymous" text="Allow Anonymous Posts"/>
+        <Button onAction="#createCourse" layoutX="100" layoutY="400" text="Create Course"/>
+        <Text fx:id="errorMessage" layoutX="100" layoutY="450"/>
     </children>
 </AnchorPane>

@@ -8,6 +8,7 @@ import org.dbprosjekt.App;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class LoginController {
     @FXML
@@ -35,16 +36,17 @@ public class LoginController {
     private Text regErrorText;
 
     @FXML
-    private void signIn() throws IOException {
+    private void signIn() throws IOException, SQLException {
         String email = emailTextInput.getText();
         String password = passwordTextInput.getText();
 
 
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
-        String queryString = "select * from user where email='" + email + "' and password='" + password + "'";
+        String queryString = "select * from User where email='" + email + "' and password='" + password + "'";
 
         if (queryGenerator.queryHasResultRows(queryString)){
             System.out.println("Signed in");
+            ProgramController.update();
             App.setRoot("program");
         }
         else {
@@ -54,7 +56,7 @@ public class LoginController {
     }
 
     @FXML
-    private void register() throws IOException {
+    private void register() throws IOException, SQLException {
         boolean emailInUse = false;
         boolean usernameInUse = false;
 
@@ -63,11 +65,11 @@ public class LoginController {
         String username = regUsernameTextInput.getText();
 
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
-        String queryString = "select * from user where email='" + email + "'";
+        String queryString = "select * from User where email='" + email + "'";
 
         if (queryGenerator.queryHasResultRows(queryString))
             emailInUse = true;
-        queryString = "select * from user where username='" + username + "'";
+        queryString = "select * from User where username='" + username + "'";
         if ((queryGenerator.queryHasResultRows(queryString)))
             usernameInUse = true;
         if (emailInUse) {
@@ -80,6 +82,7 @@ public class LoginController {
         else {
             regErrorText.setText("Registration successful");
             queryGenerator.insertUser(email, username, password);
+            ProgramController.update();
             App.setRoot("program");
         }
     }
