@@ -8,6 +8,7 @@ import org.dbprosjekt.database.DatabaseQueryGenerator;
 import org.dbprosjekt.database.Session;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class LoginController {
@@ -45,9 +46,17 @@ public class LoginController {
         String queryString = "select * from User where email='" + email + "' and password='" + password + "'";
 
         if (queryGenerator.queryHasResultRows(queryString)){
+            queryString = "select * from User where Email='"+email+"'";
+            ResultSet rs = queryGenerator.query(queryString);
+            boolean isAdmin = false;
+            while(rs.next()){
+                isAdmin = rs.getString("Type").equals("instructor");
+            }
+            Session.setAdmin(isAdmin);
             System.out.println("Signed in");
             Session.setUserID(email);
             Program2Controller.initialize();
+            System.out.println(Session.isAdmin());
         }
         else {
             System.out.println("No such user");
@@ -83,6 +92,7 @@ public class LoginController {
             regErrorText.setText("Registration successful");
             queryGenerator.insertUser(email, username, password);
             Session.setUserID(email);
+            Session.setAdmin(false);
             Program2Controller.initialize();
         }
     }

@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.dbprosjekt.App;
@@ -17,13 +18,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Program2Controller {
+    private static VBox root;
     private static VBox leftVBox;
-
+    private static Button lastFolder;
+    private static Text errorMessage;
+    private static DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
     public static void initialize() throws SQLException {
         System.out.println("init");
-        Text errorMessage = new Text();
+        errorMessage = new Text();
 
         ComboBox<Course> dropDown = new ComboBox<>();
+        dropDown.setPromptText("Choose Subject");
         fillDropDown(dropDown);
         dropDown.valueProperty().addListener((obs, oldVal, newVal) -> {
             try {
@@ -38,6 +43,10 @@ public class Program2Controller {
         newSubject.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 try {
+                    if(!Session.isAdmin()){
+                        errorMessage.setText("This action requires admin rights");
+                        return;
+                    }
                     App.setRoot("subject");
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
@@ -50,6 +59,10 @@ public class Program2Controller {
         newCourse.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 try {
+                    if(!Session.isAdmin()){
+                        errorMessage.setText("This action requires admin rights");
+                        return;
+                    }
                     App.setRoot("course");
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
@@ -62,6 +75,10 @@ public class Program2Controller {
         newFolder.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 try {
+                    if(!Session.isAdmin()){
+                        errorMessage.setText("This action requires admin rights");
+                        return;
+                    }
                     if(Session.getCourseID()!=null)
                         App.setRoot("folder");
                     else
@@ -81,22 +98,31 @@ public class Program2Controller {
         Button viewStats = new Button();
         viewStats.setText("View Statistics");
 
-        ToolBar toolBar = new ToolBar(dropDown, newSubject, newCourse, newFolder, manageUsers, newPost, viewStats, errorMessage);
-//        if(Session.getCourseID()!=null){
-//            leftVBox = new VBox(nodeListToArray(fillFolders()));
-//        }
-//        else
+        Button logOut = new Button();
+        logOut.setText("Log Out");
+        logOut.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    handleLogOut();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        ToolBar toolBar = new ToolBar(dropDown, newSubject, newCourse, newFolder, manageUsers, newPost, viewStats, logOut, errorMessage);
         leftVBox = new VBox();
         VBox rightVBox = new VBox();
         ScrollPane leftScrollPane = new ScrollPane(leftVBox);
         ScrollPane rightScrollPane = new ScrollPane(rightVBox);
         SplitPane splitPane = new SplitPane(leftScrollPane, rightScrollPane);
         VBox vBox = new VBox(toolBar, splitPane);
-        App.SetRoot(vBox);
+        App.setRoot(vBox);
+        root = vBox;
     }
     private static void fillDropDown(ComboBox<Course> combo) throws SQLException {
-        String queryString = "select SubjectID, Term, name from Course natural join Subject";
-        DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
+        String queryString = "select Subject.SubjectID, Course.Term, Subject.name from Course inner join Subject on Course.SubjectID = Subject.SubjectID inner join InCourse on Subject.SubjectID = InCourse.SubjectID and Course.Term = InCourse.Term inner join User on InCourse.Email = User.Email where User.Email='"+Session.getUserID()+"'";
         ResultSet rs = queryGenerator.query(queryString);
         ArrayList<Course> courses = new ArrayList<Course>();
         while(rs.next()){
@@ -113,34 +139,45 @@ public class Program2Controller {
         updateFolders();
     }
     private static ArrayList<Node> fillFolders() throws SQLException {
-        String queryString = "select FolderID, Name from Folder where ParentID is null";
-        DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
+        String queryString = "select FolderID, Name from Folder where ParentID is null and SubjectID='"+Session.getCourseID()+"' and Term='"+Session.getTerm()+"'";
         ResultSet rs = queryGenerator.query(queryString);
         ArrayList<Node> nodes = new ArrayList<>();
+        if(rs==null)
+            return nodes;
         while(rs.next()){
-            System.out.println(rs.getInt("FolderID"));
-            if (!Session.getFolderPath().contains(rs.getInt("FolderID"))){
-                nodes.add(new Button(rs.getString("Name")+" "+rs.getString("FolderID")));
-            }
-            else{
-                nodes.add(new VBox(nodeListToArray(subFolders(rs.getInt("FolderID"), 1))));
-            }
+            int folderID = rs.getInt("FolderID");
+            Button folder = new Button(rs.getString("Name")+"  "+"ID: "+folderID);
+            folder.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    goToFolder(folderID, folder);
+                }
+            });
+            VBox sub = new VBox(nodeListToArray(subFolders(rs.getInt("FolderID"), 1)));
+            Text filler = new Text(space(5));
+            nodes.add(new VBox(folder, new HBox(filler, sub)));
         }
         return nodes;
     }
     private static ArrayList<Node> subFolders(int parentID, int depth) throws SQLException {
-        System.out.println(parentID);
-        String queryString = "select FolderID, Name from folder where ParentID="+parentID;
-        DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
+        String queryString = "select FolderID, Name from Folder where ParentID="+parentID;
         ResultSet rs = queryGenerator.query(queryString);
         ArrayList<Node> nodes = new ArrayList<>();
+        if(rs==null){
+            return nodes;
+        }
         while(rs.next()){
-            if (!Session.getFolderPath().contains(rs.getInt("FolderID"))){
-                nodes.add(new Button(rs.getString("Name")+" "+rs.getString("FolderID")));
-            }
-            else{
-                nodes.add(new VBox(nodeListToArray(subFolders(rs.getInt("FolderID"), depth + 1))));
-            }
+            int folderID = rs.getInt("FolderID");
+            Button folder = new Button(rs.getString("Name")+"  "+"ID: "+folderID);
+            folder.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    goToFolder(folderID, folder);
+                }
+            });
+            VBox sub = new VBox(nodeListToArray(subFolders(folderID, 1)));
+            Text filler = new Text(space(5*(depth+1)));
+            nodes.add(new VBox(folder, new HBox(filler, sub)));
         }
         return nodes;
     }
@@ -158,4 +195,35 @@ public class Program2Controller {
         leftVBox.getChildren().clear();
         leftVBox.getChildren().addAll(nodeListToArray(fillFolders()));
     }
+
+    private static String space(int n){
+        return " ".repeat(Math.max(0, n));
+    }
+
+    private static void goToFolder(int folderID, Button b){
+        if (lastFolder!=null)
+            lastFolder.setStyle(null);
+        Session.setFolderID(folderID);
+        b.setStyle("-fx-background-color: #80cdb8;");
+        System.out.println(Session.getCurrentFolderID());
+        lastFolder = b;
+    }
+
+    public static void reload() throws SQLException {
+        App.setRoot(root);
+        updateFolders();
+    }
+
+    private static void handleLogOut() throws IOException {
+        Session.setUserID(null);
+        Session.setFolderID(0);
+        Session.setTerm(null);
+        Session.setCourseID(null);
+        App.setRoot("login");
+    }
+
+    public static void setErrorMessage(String message){
+        errorMessage.setText(message);
+    }
+
 }

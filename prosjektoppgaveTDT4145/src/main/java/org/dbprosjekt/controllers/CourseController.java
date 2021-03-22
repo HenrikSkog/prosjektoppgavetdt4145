@@ -1,5 +1,6 @@
 package org.dbprosjekt.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
@@ -37,7 +38,11 @@ public class CourseController {
         }
         else{
             queryGenerator.insertCourse(id, term, allows);
-            Program2Controller.initialize();
+            Program2Controller.reload();
         }
+    }
+    @FXML
+    private void goBack(ActionEvent actionEvent) throws SQLException {
+        Program2Controller.reload();
     }
 }
