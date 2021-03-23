@@ -53,7 +53,6 @@ public class FolderController {
             renameError.setText("No folder Selected");
             return;
         }
-        System.out.println(1);
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
         queryGenerator.renameFolder(Session.getCurrentFolderID(), renameInput.getText());
         path.setText(Session.ToString());

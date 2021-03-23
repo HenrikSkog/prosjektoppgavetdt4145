@@ -298,7 +298,6 @@ public class Program2Controller {
 
             Button like = new Button("Like");
             queryString = "select * from User as U inner join UserLikedPost as ULP on U.Email=ULP.Email where U.Email='"+Session.getUserID()+"' and ULP.PostID='"+postID+"'";
-            System.out.println(queryGenerator.queryHasResultRows(queryString));
             if(queryGenerator.queryHasResultRows(queryString)){
                 like.setText("Liked");
                 addLikeHandling(like, postID);
@@ -346,7 +345,6 @@ public class Program2Controller {
 
             Button like = new Button("Like");
             queryString = "select * from User as U inner join UserLikedPost as ULP on U.Email=ULP.Email where U.Email='"+Session.getUserID()+"' and ULP.PostID='"+postID+"'";
-            System.out.println(queryGenerator.queryHasResultRows(queryString));
             if(queryGenerator.queryHasResultRows(queryString)){
                 like.setText("Liked");
                 addLikeHandling(like, postID);
@@ -379,7 +377,7 @@ public class Program2Controller {
         updatePath();
     }
 
-    private static String space(int n){
+    public static String space(int n){
         return " ".repeat(Math.max(0, n));
     }
 

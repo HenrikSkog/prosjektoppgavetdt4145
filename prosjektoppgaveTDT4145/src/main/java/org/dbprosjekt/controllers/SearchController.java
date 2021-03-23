@@ -1,8 +1,14 @@
 package org.dbprosjekt.controllers;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import org.dbprosjekt.App;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
 import org.dbprosjekt.database.Session;
@@ -27,7 +33,6 @@ public class SearchController {
                 int id = rs.getInt("PostID");
                 while(true){
                     queryString = "select * from Post as P inner join Reply R on P.PostID=R.PostID where P.PostID='"+id+"'";
-                    System.out.println(queryString);
                     if(!queryGenerator.queryHasResultRows(queryString)){
                         if(!postIDs.contains(id)){
                             queryString = "select * from ThreadPost as TP inner join ThreadInFolder as TIF on TP.PostID=TIF.PostID inner join Post as P on P.PostID=TP.PostID inner join User on P.Author=User.Email and P.PostID='"+id+"'";
@@ -42,13 +47,26 @@ public class SearchController {
                 }
             }
         }
-        System.out.println(postIDs);
-        System.out.println(nodes);
-        System.out.println(Arrays.toString(Program2Controller.nodeListToArray(nodes)));
         VBox vBox = new VBox();
         ScrollPane scrollPane = new ScrollPane(vBox);
         vBox.getChildren().addAll(Program2Controller.nodeListToArray(nodes));
-        root = new VBox(scrollPane);
+        Button back = new Button("Back");
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    Program2Controller.reload();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        });
+        Text title = new Text("Search results");
+        title.setStyle("-fx-end-margin: 20");
+        title.setStyle("-fx-font-size: 25");
+        HBox top = new HBox(50);
+        top.getChildren().addAll(title, back);
+        root = new VBox(top, scrollPane);
         App.setRoot(root);
     }
 }

@@ -28,7 +28,7 @@ public class StatsController {
 	}
 
 	@FXML
-	public void initialize() {
+	public void initialize() throws SQLException {
 		//how many posts created and viewed in total
 		var queryGenerator = new DatabaseQueryGenerator();
 		var stats = queryGenerator.getTotalUserStats();
