@@ -13,6 +13,8 @@ import java.sql.SQLException;
 
 public class StatsController {
 
+	//TODO change email to username in stats
+
 	@FXML
 	TableView usertable;
 
