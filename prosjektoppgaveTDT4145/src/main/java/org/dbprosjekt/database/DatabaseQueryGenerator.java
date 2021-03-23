@@ -61,11 +61,23 @@ public class DatabaseQueryGenerator extends DBConn {
 		}
 	}
 
-	public ArrayList<ArrayList<String>> getStats() {
+	public String getDailyActiveUsers() {
+		String queryString = "select count(*) as num from UserViewedThread u where date(u.date) = date(curdate())";
+		var rs = query(queryString);
+		var data = getSelectResult(rs, "num");
+
+		if(data.get(0).size() == 0) {
+			System.out.println("Excepton in getDailyActiveUsers, no data");
+			return "0";
+		}
+		return data.get(0).get(0);
+	}
+
+	public ArrayList<ArrayList<String>> getTotalUserStats() {
 		String queryString = "SELECT q1.Email, viewedPosts, createdPosts FROM (select User.email as Email, count(U.Email) as viewedPosts from User left outer join UserViewedThread U on User.Email = U.Email group by User.Email) q1 left outer join (select Author as Email, count(*) as createdPosts from Post group by Author) q2 on q1.Email = q2.Email order by viewedPosts desc;";
 
-		var rs1 = query(queryString);
-		var data = getSelectResult(rs1, "Email", "viewedPosts", "createdPosts");
+		var rs = query(queryString);
+		var data = getSelectResult(rs, "Email", "viewedPosts", "createdPosts");
 
 //		removing nulls from result
 		for (int i = 0; i < data.size(); i++) {
@@ -74,6 +86,15 @@ public class DatabaseQueryGenerator extends DBConn {
 					data.get(i).set(j, "0");
 			}
 		}
+
+		return data;
+	}
+
+	public ArrayList<ArrayList<String>> getActiveThreads() {
+		String queryString = "select TP.PostID, TP.Title, count(*) as num from ThreadPost TP join UserViewedThread UVT on TP.PostID = UVT.PostID group by TP.PostID;";
+
+		var rs = query(queryString);
+		var data = getSelectResult(rs, "PostID", "Title", "num");
 
 		return data;
 	}
@@ -288,7 +309,7 @@ public class DatabaseQueryGenerator extends DBConn {
 
 	public static void main(String[] args) {
 //		var test = new DatabaseQueryGenerator();
-//		var test1 = test.getStats();
+//		var test1 = test.getTotalUserStats();
 //
 //		System.out.println(test1);
 	}

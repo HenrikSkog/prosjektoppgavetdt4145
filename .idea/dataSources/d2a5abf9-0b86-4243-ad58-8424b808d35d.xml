@@ -1171,9 +1171,9 @@ SELECT|sys.sys_config
     <table id="377" parent="5" name="userlikedpost"/>
     <table id="378" parent="5" name="userviewedthread"/>
     <table id="379" parent="8" name="exercise"/>
-    <table id="380" parent="8" name="exercise_set"/>
-    <table id="381" parent="8" name="repetition"/>
-    <table id="382" parent="8" name="workout"/>
+    <table id="380" parent="8" name="repetition"/>
+    <table id="381" parent="8" name="workout"/>
+    <table id="382" parent="8" name="workout_set"/>
     <column id="383" parent="287" name="USER">
       <Position>1</Position>
       <DataType>varchar(97)|0s</DataType>
@@ -4642,6 +4642,7 @@ Term</RefColNames>
     <column id="1138" parent="369" name="Term">
       <Position>3</Position>
       <DataType>varchar(20)|0s</DataType>
+      <NotNull>1</NotNull>
     </column>
     <index id="1139" parent="369" name="SubjectID">
       <ColNames>SubjectID
@@ -4651,7 +4652,8 @@ Term</ColNames>
     <key id="1140" parent="369" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>Email
-SubjectID</ColNames>
+SubjectID
+Term</ColNames>
       <Primary>1</Primary>
     </key>
     <foreign-key id="1141" parent="369" name="incourse_ibfk_1">
@@ -4686,7 +4688,7 @@ Term</RefColNames>
     </column>
     <column id="1146" parent="370" name="Time">
       <Position>4</Position>
-      <DataType>datetime|0s</DataType>
+      <DataType>time|0s</DataType>
     </column>
     <column id="1147" parent="370" name="IsAnonymous">
       <Position>5</Position>
@@ -4972,32 +4974,31 @@ Date</ColNames>
       <Position>3</Position>
       <DataType>text|0s</DataType>
     </column>
-    <key id="1201" parent="379" name="PRIMARY">
+    <column id="1201" parent="379" name="type">
+      <Position>4</Position>
+      <DataType>varchar(30)|0s</DataType>
+    </column>
+    <key id="1202" parent="379" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="1202" parent="380" name="id">
+    <column id="1203" parent="380" name="id">
       <Position>1</Position>
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="1203" parent="380" name="duration">
+    <column id="1204" parent="380" name="weight">
       <Position>2</Position>
       <DataType>int|0s</DataType>
     </column>
-    <column id="1204" parent="380" name="exerciseid">
+    <column id="1205" parent="380" name="setid">
       <Position>3</Position>
       <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
     </column>
-    <column id="1205" parent="380" name="comment">
-      <Position>4</Position>
-      <DataType>text|0s</DataType>
-    </column>
-    <index id="1206" parent="380" name="exerciseid">
-      <ColNames>exerciseid</ColNames>
+    <index id="1206" parent="380" name="setid">
+      <ColNames>setid</ColNames>
       <Type>btree</Type>
     </index>
     <key id="1207" parent="380" name="PRIMARY">
@@ -5005,11 +5006,12 @@ Date</ColNames>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="1208" parent="380" name="exercise_set_ibfk_1">
-      <ColNames>exerciseid</ColNames>
-      <RefTableName>exercise</RefTableName>
+    <foreign-key id="1208" parent="380" name="repetition_ibfk_1">
+      <ColNames>setid</ColNames>
+      <RefTableName>workout_set</RefTableName>
       <RefColNames>id</RefColNames>
       <OnUpdate>cascade</OnUpdate>
+      <OnDelete>cascade</OnDelete>
     </foreign-key>
     <column id="1209" parent="381" name="id">
       <Position>1</Position>
@@ -5017,56 +5019,78 @@ Date</ColNames>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="1210" parent="381" name="weight">
+    <column id="1210" parent="381" name="date">
       <Position>2</Position>
-      <DataType>int|0s</DataType>
+      <DataType>date|0s</DataType>
     </column>
-    <column id="1211" parent="381" name="setid">
+    <column id="1211" parent="381" name="time">
       <Position>3</Position>
-      <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
+      <DataType>time|0s</DataType>
     </column>
-    <index id="1212" parent="381" name="setid">
-      <ColNames>setid</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="1213" parent="381" name="PRIMARY">
+    <column id="1212" parent="381" name="location">
+      <Position>4</Position>
+      <DataType>varchar(100)|0s</DataType>
+    </column>
+    <column id="1213" parent="381" name="comment">
+      <Position>5</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <key id="1214" parent="381" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="1214" parent="381" name="repetition_ibfk_1">
-      <ColNames>setid</ColNames>
-      <RefTableName>exercise_set</RefTableName>
-      <RefColNames>id</RefColNames>
-      <OnUpdate>cascade</OnUpdate>
-    </foreign-key>
     <column id="1215" parent="382" name="id">
       <Position>1</Position>
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="1216" parent="382" name="date">
+    <column id="1216" parent="382" name="type">
       <Position>2</Position>
-      <DataType>date|0s</DataType>
+      <DataType>varchar(30)|0s</DataType>
     </column>
-    <column id="1217" parent="382" name="time">
+    <column id="1217" parent="382" name="duration">
       <Position>3</Position>
-      <DataType>time|0s</DataType>
+      <DataType>int|0s</DataType>
     </column>
-    <column id="1218" parent="382" name="location">
+    <column id="1218" parent="382" name="comment">
       <Position>4</Position>
-      <DataType>varchar(100)|0s</DataType>
-    </column>
-    <column id="1219" parent="382" name="comment">
-      <Position>5</Position>
       <DataType>text|0s</DataType>
     </column>
-    <key id="1220" parent="382" name="PRIMARY">
+    <column id="1219" parent="382" name="exercise_id">
+      <Position>5</Position>
+      <DataType>int|0s</DataType>
+    </column>
+    <column id="1220" parent="382" name="workout_id">
+      <Position>6</Position>
+      <DataType>int|0s</DataType>
+    </column>
+    <index id="1221" parent="382" name="exercise_id">
+      <ColNames>exercise_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <index id="1222" parent="382" name="workout_id">
+      <ColNames>workout_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="1223" parent="382" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
+    <foreign-key id="1224" parent="382" name="workout_set_ibfk_1">
+      <ColNames>exercise_id</ColNames>
+      <RefTableName>exercise</RefTableName>
+      <RefColNames>id</RefColNames>
+      <OnUpdate>cascade</OnUpdate>
+    </foreign-key>
+    <foreign-key id="1225" parent="382" name="workout_set_ibfk_2">
+      <ColNames>workout_id</ColNames>
+      <RefTableName>workout</RefTableName>
+      <RefColNames>id</RefColNames>
+      <OnUpdate>cascade</OnUpdate>
+      <OnDelete>cascade</OnDelete>
+    </foreign-key>
   </database-model>
 </dataSource>
