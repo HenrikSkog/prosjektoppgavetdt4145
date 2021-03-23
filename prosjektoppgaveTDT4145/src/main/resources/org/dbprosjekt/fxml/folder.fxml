@@ -16,7 +16,16 @@
         <Button layoutX="100" layoutY="300" onAction="#createFolder">Create folder</Button>
 
         <Button layoutX="300" layoutY="100" onAction="#deleteFolder">Delete current folder</Button>
-        <Button onAction="#goBack" layoutY="100" layoutX="300" text="Back" fx:id="back"/>
+        <Text layoutX="300" layoutY="150" fx:id="deleteError"/>
+
+        <Text layoutX="500" layoutY="100">Rename current folder</Text>
+        <TextField layoutX="500" layoutY="200" promptText="Enter new name" fx:id="renameInput"/>
+        <Button layoutX="500" layoutY="300" onAction="#renameFolder">Rename</Button>
+        <Text layoutX="500" layoutY="350" fx:id="renameError"/>
+
+
+
+        <Button onAction="#goBack" layoutY="100" layoutX="700" text="Back" fx:id="back"/>
     </children>
 </AnchorPane>
 

@@ -229,13 +229,11 @@ public class Program2Controller {
             lastFolder.setStyle(null);
         Session.setFolderID(folderID);
         b.setStyle("-fx-background-color: #80cdb8;");
-        System.out.println(Session.getCurrentFolderID());
         lastFolder = b;
         updatePath();
     }
 
     public static void reload() throws SQLException {
-        System.out.println(Session.ToString());
         App.setRoot(root);
         updateFolders();
         updatePath();
@@ -255,6 +253,10 @@ public class Program2Controller {
 
     public static void setErrorMessage(String message){
         errorMessage.setText(message);
+    }
+
+    private static void updatePots(){
+
     }
 
 }

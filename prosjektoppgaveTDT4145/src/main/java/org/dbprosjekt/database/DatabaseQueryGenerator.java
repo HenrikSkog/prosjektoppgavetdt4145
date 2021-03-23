@@ -115,4 +115,14 @@ public class DatabaseQueryGenerator extends DBConn {
         Statement statement = conn.createStatement();
         statement.execute(queryString);
     }
+    public void removeFolder(int folderID) throws SQLException {
+        String queryString = "delete from Folder where FolderID='"+folderID+"'";
+        Statement statement = conn.createStatement();
+        statement.execute(queryString);
+    }
+    public void renameFolder(int folderID, String name) throws SQLException {
+        String queryString ="update Folder set Name='"+name+"' where FolderID='"+folderID+"'";
+        Statement statement = conn.createStatement();
+        statement.execute(queryString);
+    }
 }

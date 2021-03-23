@@ -57,7 +57,6 @@ public class LoginController {
             Session.setUserID(email);
 
             Program2Controller.initialize();
-            System.out.println(Session.isAdmin());
         }
         else {
             System.out.println("No such user");

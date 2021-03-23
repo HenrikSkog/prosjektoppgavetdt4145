@@ -79,7 +79,6 @@ public abstract class Session {
             ResultSet rs = queryGenerator.query(queryString);
             rs.next();
             int parentID = rs.getInt("ParentID");
-            System.out.println(parentID);
             if(parentID==0)
                 return path;
             path = getFolderName(parentID)+"/"+path;
@@ -100,7 +99,14 @@ public abstract class Session {
 
     public static String ToString(){
         try {
-            return getUsername()+"/"+getCourseIDString()+"/"+getCourseName()+" - "+getTermString()+"/"+getFolderPath();
+            String s = getUsername();
+            if (!getCourseIDString().equals(""))
+                s+="/"+getCourseIDString()+"/"+getCourseName()+" - "+getTermString()+"/"+getFolderPath();
+            if (isAdmin())
+                s+="        Logged in as instructor";
+            else
+                s+="        Logged in as student";
+            return s;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

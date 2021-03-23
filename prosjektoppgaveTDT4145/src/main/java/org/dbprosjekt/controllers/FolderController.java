@@ -11,6 +11,12 @@ import java.sql.SQLException;
 
 public class FolderController {
     @FXML
+    private Text renameError;
+    @FXML
+    private Text deleteError;
+    @FXML
+    private TextField renameInput;
+    @FXML
     private Text path;
     @FXML
     private TextField folderNameInput;
@@ -31,7 +37,25 @@ public class FolderController {
         path.setText(Session.ToString());
     }
     @FXML
-    private void deleteFolder(ActionEvent actionEvent) {
-
+    private void deleteFolder(ActionEvent actionEvent) throws SQLException {
+        if(Session.getCurrentFolderID()==0){
+            deleteError.setText("No folder selected");
+            return;
+        }
+        DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
+        queryGenerator.removeFolder(Session.getCurrentFolderID());
+        Session.setFolderID(0);
+        Program2Controller.reload();
+    }
+    @FXML
+    private void renameFolder(ActionEvent actionEvent) throws SQLException {
+        if(Session.getCurrentFolderID()==0){
+            renameError.setText("No folder Selected");
+            return;
+        }
+        System.out.println(1);
+        DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
+        queryGenerator.renameFolder(Session.getCurrentFolderID(), renameInput.getText());
+        path.setText(Session.ToString());
     }
 }

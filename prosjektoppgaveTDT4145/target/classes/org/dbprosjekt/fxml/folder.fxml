@@ -10,10 +10,22 @@
 <AnchorPane xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dbprosjekt.controllers.FolderController">
     <children>
         <Text layoutX="10" layoutY="10" fx:id="path"/>
+
         <Text layoutX="100" layoutY="100">Create a new folder</Text>
         <TextField layoutX="100" layoutY="200" fx:id="folderNameInput" promptText="Folder name"/>
         <Button layoutX="100" layoutY="300" onAction="#createFolder">Create folder</Button>
-        <Button onAction="#goBack" layoutY="100" layoutX="300" text="Back" fx:id="back"/>
+
+        <Button layoutX="300" layoutY="100" onAction="#deleteFolder">Delete current folder</Button>
+        <Text layoutX="300" layoutY="150" fx:id="deleteError"/>
+
+        <Text layoutX="500" layoutY="100">Rename current folder</Text>
+        <TextField layoutX="500" layoutY="200" promptText="Enter new name" fx:id="renameInput"/>
+        <Button layoutX="500" layoutY="300" onAction="#renameFolder">Rename</Button>
+        <Text layoutX="500" layoutY="350" fx:id="renameError"/>
+
+
+
+        <Button onAction="#goBack" layoutY="100" layoutX="700" text="Back" fx:id="back"/>
     </children>
 </AnchorPane>
 
