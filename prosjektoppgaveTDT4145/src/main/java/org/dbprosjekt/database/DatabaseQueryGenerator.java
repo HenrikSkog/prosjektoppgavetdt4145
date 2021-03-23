@@ -255,10 +255,36 @@ public class DatabaseQueryGenerator extends DBConn {
         statement.execute(queryString);
     }
     public void renameFolder(int folderID, String name) throws SQLException {
-        String queryString ="update Folder set Name='"+name+"' where FolderID='"+folderID+"'";
+        String queryString = "update Folder set Name='"+name+"' where FolderID='"+folderID+"'";
         Statement statement = conn.createStatement();
         statement.execute(queryString);
     }
+    public void removeLike(String email, int postID) throws SQLException {
+		String queryString = "delete from UserLikedPost as ULP where ULP.Email='"+email+"' and ULP.PostID='"+postID+"'";
+		System.out.println(queryString);
+		Statement statement = conn.createStatement();
+		statement.execute(queryString);
+	}
+	public void insertLike(String email, int postID) throws SQLException {
+		String queryString = "insert into UserLikedPost (Email, PostID, Date, Time) VALUES('"+email+"','"+postID+"',CURDATE(),CURTIME())";
+		Statement statement = conn.createStatement();
+		statement.execute(queryString);
+	}
+	public int getLikes(int postID) throws SQLException {
+		String queryString = "select count(distinct Email) as likes from UserLikedPost where PostID='"+postID+"'";
+		ResultSet rs = query(queryString);
+		rs.next();
+		return rs.getInt("Likes");
+	}
+	public void insertReply(int postID, boolean anonymous, String text, String email) throws SQLException {
+		String queryString = "insert into Post (PostID, Text, Date, Time, IsAnonymous, Author) VALUES (null,'"+text+"',CURDATE(),CURTIME(),"+anonymous+",'"+email+"')";
+		System.out.println(queryString);
+		conn.createStatement().execute(queryString);
+		int replyID = Integer.parseInt(getLastInsertedID());
+		queryString = "insert into Reply (PostID, ReplyToID) VALUES ("+replyID+","+postID+")";
+		System.out.println(queryString);
+		conn.createStatement().execute(queryString);
+	}
 
 	public static void main(String[] args) {
 //		var test = new DatabaseQueryGenerator();
