@@ -34,6 +34,9 @@ public class NewPostController {
 
 		var selectedTag = tags.getValue().toString();
 
+		if(selectedTag.equals("No tag"))
+			selectedTag = null;
+
 		int isAnonymous = 0;
 
 		if(anonymousBox.isSelected()) {
@@ -46,17 +49,26 @@ public class NewPostController {
 	}
 
 	@FXML
+	public void back() throws SQLException {
+		Program2Controller.reload();
+	}
+
+	@FXML
 	public void initialize() {
 		var queryGenerator = new DatabaseQueryGenerator();
 		boolean allowsAnon = queryGenerator.currentCourseAllowsAnonymous();
 
 		if(!allowsAnon) {
 			anonymousBox.setDisable(true);
+		} else {
+			anonymousBox.setDisable(false);
 		}
 
+		tags.setValue("No tag");
 		tags.setItems(
 			FXCollections.observableArrayList(
-				"Question", "Homework ", "Homework solution", "Lectures notes", "General announcement"
+				"No tag", "Question", "Homework ", "Homework solution", "Lectures notes", "General announcement"
 		));
+
 	}
 }

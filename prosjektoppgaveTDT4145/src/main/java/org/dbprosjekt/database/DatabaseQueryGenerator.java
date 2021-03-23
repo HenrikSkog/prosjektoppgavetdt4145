@@ -61,9 +61,11 @@ public class DatabaseQueryGenerator extends DBConn {
 			String queryString = "select * from Course where SubjectID='" + Session.getCourseID() + "' and Term='" + Session.getTerm() + "'";
 			var rs = query(queryString);
 			var data = getSelectResult(rs, "AllowsAnonymous");
-			if(data.get(0) == "1") {
+
+			if(data.get(0).equals("1")) {
 				return true;
 			}
+
 		} catch(Exception e) {
 			System.out.println("exception in check for anonymous");
 			System.out.println(e);
