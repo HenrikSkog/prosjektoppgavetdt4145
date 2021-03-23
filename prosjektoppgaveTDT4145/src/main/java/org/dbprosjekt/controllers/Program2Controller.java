@@ -22,13 +22,14 @@ public class Program2Controller {
     private static VBox leftVBox;
     private static Button lastFolder;
     private static Text errorMessage;
+    private static Text path = new Text();
     private static DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
     public static void initialize() throws SQLException {
         System.out.println("init");
         errorMessage = new Text();
 
         ComboBox<Course> dropDown = new ComboBox<>();
-        dropDown.setPromptText("Choose Subject");
+        dropDown.setPromptText("Choose Course");
         fillDropDown(dropDown);
         dropDown.valueProperty().addListener((obs, oldVal, newVal) -> {
             try {
@@ -70,9 +71,9 @@ public class Program2Controller {
             }
         });
 
-        Button newFolder = new Button();
-        newFolder.setText("New Folder");
-        newFolder.setOnAction(new EventHandler<ActionEvent>() {
+        Button manageFolders = new Button();
+        manageFolders.setText("Manage Folders");
+        manageFolders.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 try {
                     if(!Session.isAdmin()){
@@ -91,6 +92,23 @@ public class Program2Controller {
 
         Button manageUsers = new Button();
         manageUsers.setText("Manage Users");
+        manageUsers.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    if(!Session.isAdmin()){
+                        errorMessage.setText("This action requires admin rights");
+                        return;
+                    }
+                    if(Session.getCourseID()!=null)
+                        App.setRoot("manageUsers");
+                    else
+                        errorMessage.setText("Please select a course");
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
+        });
 
         Button newPost = new Button();
         newPost.setText("New Post");
@@ -121,15 +139,16 @@ public class Program2Controller {
             }
         });
 
-        ToolBar toolBar = new ToolBar(dropDown, newSubject, newCourse, newFolder, manageUsers, newPost, viewStats, logOut, errorMessage);
+        ToolBar toolBar = new ToolBar(dropDown, newSubject, newCourse, manageFolders, manageUsers, newPost, viewStats, logOut, errorMessage);
         leftVBox = new VBox();
         VBox rightVBox = new VBox();
         ScrollPane leftScrollPane = new ScrollPane(leftVBox);
         ScrollPane rightScrollPane = new ScrollPane(rightVBox);
         SplitPane splitPane = new SplitPane(leftScrollPane, rightScrollPane);
-        VBox vBox = new VBox(toolBar, splitPane);
+        VBox vBox = new VBox(path, toolBar, splitPane);
         App.setRoot(vBox);
         root = vBox;
+        updatePath();
     }
     private static void fillDropDown(ComboBox<Course> combo) throws SQLException {
         String queryString = "select Subject.SubjectID, Course.Term, Subject.name from Course inner join Subject on Course.SubjectID = Subject.SubjectID inner join InCourse on Subject.SubjectID = InCourse.SubjectID and Course.Term = InCourse.Term inner join User on InCourse.Email = User.Email where User.Email='"+Session.getUserID()+"'";
@@ -157,6 +176,8 @@ public class Program2Controller {
         while(rs.next()){
             int folderID = rs.getInt("FolderID");
             Button folder = new Button(rs.getString("Name")+"  "+"ID: "+folderID);
+            if(folderID!=0 && folderID==Session.getCurrentFolderID())
+                goToFolder(folderID, folder);
             folder.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
@@ -179,6 +200,8 @@ public class Program2Controller {
         while(rs.next()){
             int folderID = rs.getInt("FolderID");
             Button folder = new Button(rs.getString("Name")+"  "+"ID: "+folderID);
+            if(folderID!=0 && folderID==Session.getCurrentFolderID())
+                goToFolder(folderID, folder);
             folder.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
@@ -204,6 +227,7 @@ public class Program2Controller {
         System.out.println("updateFolders");
         leftVBox.getChildren().clear();
         leftVBox.getChildren().addAll(nodeListToArray(fillFolders()));
+        updatePath();
     }
 
     private static String space(int n){
@@ -217,11 +241,14 @@ public class Program2Controller {
         b.setStyle("-fx-background-color: #80cdb8;");
         System.out.println(Session.getCurrentFolderID());
         lastFolder = b;
+        updatePath();
     }
 
     public static void reload() throws SQLException {
+        System.out.println(Session.ToString());
         App.setRoot(root);
         updateFolders();
+        updatePath();
     }
 
     private static void handleLogOut() throws IOException {
@@ -230,6 +257,10 @@ public class Program2Controller {
         Session.setTerm(null);
         Session.setCourseID(null);
         App.setRoot("login");
+    }
+
+    public static void updatePath(){
+        path.setText("  "+Session.ToString());
     }
 
     public static void setErrorMessage(String message){
