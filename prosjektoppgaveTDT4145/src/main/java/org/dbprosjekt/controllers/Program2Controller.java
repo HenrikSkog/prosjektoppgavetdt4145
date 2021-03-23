@@ -147,6 +147,7 @@ public class Program2Controller {
         ScrollPane leftScrollPane = new ScrollPane(leftVBox);
         ScrollPane rightScrollPane = new ScrollPane(rightVBox);
         SplitPane splitPane = new SplitPane(leftScrollPane, rightScrollPane);
+        splitPane.setDividerPositions(0.2);
         VBox vBox = new VBox(path, toolBar, splitPane);
         App.setRoot(vBox);
         root = vBox;
