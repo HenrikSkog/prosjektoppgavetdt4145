@@ -3,6 +3,7 @@ package org.dbprosjekt.database;
 import org.dbprosjekt.controllers.Program2Controller;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,5 +99,20 @@ public class DatabaseQueryGenerator extends DBConn {
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+    public void insertInCourse(String email) throws SQLException {
+        String queryString = "insert into InCourse (Email, SubjectID, Term) VALUES ('"+email+"','"+Session.getCourseID()+"','"+Session.getTerm()+"')";
+        Statement statement = conn.createStatement();
+        statement.execute(queryString);
+    }
+    public void promoteUser(String email) throws SQLException {
+        String queryString = "update User set Type='instructor' where Email='"+email+"'";
+        Statement statement = conn.createStatement();
+        statement.execute(queryString);
+    }
+    public void removeInCourse(String email) throws SQLException {
+        String queryString = "delete from InCourse where Email='"+email+"' and SubjectID='"+Session.getCourseID()+"' and Term='"+Session.getTerm()+"'";
+        Statement statement = conn.createStatement();
+        statement.execute(queryString);
     }
 }

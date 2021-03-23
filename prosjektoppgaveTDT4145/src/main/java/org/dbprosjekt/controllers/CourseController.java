@@ -5,11 +5,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
+import org.dbprosjekt.database.Session;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 public class CourseController {
+    @FXML
+    private Text path;
     @FXML
     private CheckBox allowsAnonymous;
     @FXML
@@ -44,5 +47,9 @@ public class CourseController {
     @FXML
     private void goBack(ActionEvent actionEvent) throws SQLException {
         Program2Controller.reload();
+    }
+    @FXML
+    public void initialize(){
+        path.setText(Session.ToString());
     }
 }

@@ -12,6 +12,8 @@ import java.sql.SQLException;
 
 public class SubjectController {
     @FXML
+    private Text path;
+    @FXML
     private TextField subjectNameInput;
     @FXML
     private TextField subjectIdInput;
@@ -34,5 +36,9 @@ public class SubjectController {
     @FXML
     private void goBack(ActionEvent actionEvent) throws SQLException {
         Program2Controller.reload();
+    }
+    @FXML
+    public void initialize(){
+        path.setText(Session.ToString());
     }
 }

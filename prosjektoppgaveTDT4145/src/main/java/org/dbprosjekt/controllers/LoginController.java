@@ -55,6 +55,7 @@ public class LoginController {
             Session.setAdmin(isAdmin);
             System.out.println("Signed in");
             Session.setUserID(email);
+
             Program2Controller.initialize();
             System.out.println(Session.isAdmin());
         }
