@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<Pane fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dbprosjekt.controllers.NewPostController">
+    <children>
+        <Text layoutX="888.0" layoutY="243.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Create a New Post">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Text>
+        <TextField fx:id="titleInput" layoutX="726.0" layoutY="320.0" prefHeight="37.0" prefWidth="468.0" promptText="Title" />
+        <TextArea fx:id="textInput" layoutX="726.0" layoutY="433.0" prefHeight="438.0" prefWidth="468.0" promptText="Write something here" />
+        <Button layoutX="939.0" layoutY="937.0" mnemonicParsing="false" onAction="#newPost" text="Send" />
+      <ChoiceBox fx:id="tags" layoutX="727.0" layoutY="392.0" prefHeight="25.0" prefWidth="468.0" />
+      <Text layoutX="726.0" layoutY="379.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tag:" />
+      <CheckBox fx:id="anonymousBox" layoutX="901.0" layoutY="889.0" mnemonicParsing="false" text="Post anonymously" />
+    </children>
+</Pane>

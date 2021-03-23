@@ -112,6 +112,16 @@ public class Program2Controller {
 
         Button newPost = new Button();
         newPost.setText("New Post");
+        newPost.setOnAction(event -> {
+            try {
+                if(Session.getCourseID() != null && Session.getCurrentFolderID() != 0)
+                    App.setRoot("newpost2");
+                else
+                    errorMessage.setText("Please select a course");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        });
 
         Button viewStats = new Button();
         viewStats.setText("View Statistics");
