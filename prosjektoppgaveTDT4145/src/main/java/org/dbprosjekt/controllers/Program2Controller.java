@@ -151,12 +151,32 @@ public class Program2Controller {
             }
         });
 
-        ToolBar toolBar = new ToolBar(dropDown, newSubject, newCourse, manageFolders, manageUsers, newPost, viewStats, logOut, errorMessage);
+        TextField searchInput = new TextField();
+        searchInput.setPromptText("Enter keywords");
+        Button search = new Button("Search");
+        search.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if(Session.getCourseID()==null){
+                    errorMessage.setText("Please select a course");
+                    return;
+                }
+                String input = searchInput.getText();
+                try {
+                    SearchController.initialize(input);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        });
+
+        ToolBar toolBar = new ToolBar(dropDown, newSubject, newCourse, manageFolders, manageUsers, newPost, viewStats, searchInput, search, logOut, errorMessage);
         leftVBox = new VBox();
         rightVBox = new VBox();
         ScrollPane leftScrollPane = new ScrollPane(leftVBox);
         ScrollPane rightScrollPane = new ScrollPane(rightVBox);
         SplitPane splitPane = new SplitPane(leftScrollPane, rightScrollPane);
+        splitPane.setDividerPositions(0.2);
         VBox vBox = new VBox(path, toolBar, splitPane);
         App.setRoot(vBox);
         root = vBox;
@@ -177,7 +197,9 @@ public class Program2Controller {
     private static void selectCourse(Course course) throws SQLException {
         Session.setCourseID(course.getId());
         Session.setTerm(course.getTerm());
+        Session.setFolderID(0);
         updateFolders();
+        updatePots();
     }
     private static ArrayList<Node> fillFolders() throws SQLException {
         String queryString = "select FolderID, Name from Folder where ParentID is null and SubjectID='"+Session.getCourseID()+"' and Term='"+Session.getTerm()+"'";
@@ -238,6 +260,12 @@ public class Program2Controller {
     private static ArrayList<Node> fillPosts() throws SQLException {
         String queryString = "select * from ThreadPost as TP inner join ThreadInFolder as TIF on TP.PostID=TIF.PostID inner join Post as P on P.PostID=TP.PostID inner join User on P.Author=User.Email where TIF.FolderID='"+Session.getCurrentFolderID()+"'";
         ResultSet rs = queryGenerator.query(queryString);
+
+        return postsFromResultSet(rs);
+    }
+
+    public static ArrayList<Node> postsFromResultSet(ResultSet rs) throws SQLException {
+        String queryString;
         ArrayList<Node> nodes = new ArrayList<>();
         if(rs==null)
             return nodes;
@@ -270,7 +298,6 @@ public class Program2Controller {
 
             Button like = new Button("Like");
             queryString = "select * from User as U inner join UserLikedPost as ULP on U.Email=ULP.Email where U.Email='"+Session.getUserID()+"' and ULP.PostID='"+postID+"'";
-            System.out.println(queryGenerator.queryHasResultRows(queryString));
             if(queryGenerator.queryHasResultRows(queryString)){
                 like.setText("Liked");
                 addLikeHandling(like, postID);
@@ -318,7 +345,6 @@ public class Program2Controller {
 
             Button like = new Button("Like");
             queryString = "select * from User as U inner join UserLikedPost as ULP on U.Email=ULP.Email where U.Email='"+Session.getUserID()+"' and ULP.PostID='"+postID+"'";
-            System.out.println(queryGenerator.queryHasResultRows(queryString));
             if(queryGenerator.queryHasResultRows(queryString)){
                 like.setText("Liked");
                 addLikeHandling(like, postID);
@@ -336,7 +362,7 @@ public class Program2Controller {
         return nodes;
     }
 
-    private static Node[] nodeListToArray(ArrayList<Node> list){
+    public static Node[] nodeListToArray(ArrayList<Node> list){
         Node[] nodes = new Node[list.size()];
         for(int i = 0; i<list.size(); i++){
             nodes[i] = list.get(i);
@@ -351,7 +377,7 @@ public class Program2Controller {
         updatePath();
     }
 
-    private static String space(int n){
+    public static String space(int n){
         return " ".repeat(Math.max(0, n));
     }
 

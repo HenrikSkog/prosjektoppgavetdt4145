@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,7 @@ public class DatabaseQueryGenerator extends DBConn {
 			Statement statement = conn.createStatement();
 			return statement.executeQuery(queryString);
 		} catch (Exception e) {
-			System.out.println("exception in query method");
+			System.out.println("exception in query method with string "+queryString);
 			System.out.println(e.getCause());
 			return null;
 		}
@@ -90,13 +91,34 @@ public class DatabaseQueryGenerator extends DBConn {
 		return data;
 	}
 
-	public ArrayList<ArrayList<String>> getActiveThreads() {
+	public ArrayList<ArrayList<String>> getActiveThreads() throws SQLException {
 		String queryString = "select TP.PostID, TP.Title, count(*) as num from ThreadPost TP join UserViewedThread UVT on TP.PostID = UVT.PostID group by TP.PostID;";
 
 		var rs = query(queryString);
+
+		queryString = "select * from ThreadPost as TP inner join Post as P on TP.PostID = P.PostID";
+		ResultSet rs2 = query(queryString);
+		HashMap<Integer, Integer> repliesToPost = new HashMap<>();
+		while (rs2.next()){
+			int replies = getThreadSize(rs2.getInt("P.PostID"),1)-1;
+			System.out.println(rs2.getInt("P.PostID")+", "+replies);
+			repliesToPost.put(rs2.getInt("P.PostID"), replies);
+		}
 		var data = getSelectResult(rs, "PostID", "Title", "num");
 
 		return data;
+	}
+
+	private int getThreadSize(int postID, int depth) throws SQLException {
+		String queryString = "select * from Reply where ReplyToID='"+postID+"'";
+		if(!queryHasResultRows(queryString))
+			return 1;
+		int sum = 0;
+		ResultSet rs = query(queryString);
+		while(rs.next()){
+			sum+=getThreadSize(rs.getInt("PostID"),depth+1);
+		}
+		return sum+1;
 	}
 
 	private ArrayList<String> getPostIDsInFolder(String FolderID) {
@@ -209,7 +231,6 @@ public class DatabaseQueryGenerator extends DBConn {
 //            insert thread in folder
 			String insertThreadInFolderQueryString = buildInsert("ThreadInFolder", Integer.toString(Session.getCurrentFolderID()), id);
 
-			System.out.println(insertThreadInFolderQueryString);
 
 			statement.execute(insertThreadInFolderQueryString);
 
@@ -255,8 +276,8 @@ public class DatabaseQueryGenerator extends DBConn {
 			System.out.println(e);
 		}
 	}
-    public void insertInCourse(String email) throws SQLException {
-        String queryString = "insert into InCourse (Email, SubjectID, Term) VALUES ('"+email+"','"+Session.getCourseID()+"','"+Session.getTerm()+"')";
+    public void insertInCourse(String email, String courseID, String term) throws SQLException {
+        String queryString = "insert into InCourse (Email, SubjectID, Term) VALUES ('"+email+"','"+courseID+"','"+term+"')";
         Statement statement = conn.createStatement();
         statement.execute(queryString);
     }
@@ -282,7 +303,6 @@ public class DatabaseQueryGenerator extends DBConn {
     }
     public void removeLike(String email, int postID) throws SQLException {
 		String queryString = "delete from UserLikedPost as ULP where ULP.Email='"+email+"' and ULP.PostID='"+postID+"'";
-		System.out.println(queryString);
 		Statement statement = conn.createStatement();
 		statement.execute(queryString);
 	}
@@ -299,11 +319,9 @@ public class DatabaseQueryGenerator extends DBConn {
 	}
 	public void insertReply(int postID, boolean anonymous, String text, String email) throws SQLException {
 		String queryString = "insert into Post (PostID, Text, Date, Time, IsAnonymous, Author) VALUES (null,'"+text+"',CURDATE(),CURTIME(),"+anonymous+",'"+email+"')";
-		System.out.println(queryString);
 		conn.createStatement().execute(queryString);
 		int replyID = Integer.parseInt(getLastInsertedID());
 		queryString = "insert into Reply (PostID, ReplyToID) VALUES ("+replyID+","+postID+")";
-		System.out.println(queryString);
 		conn.createStatement().execute(queryString);
 	}
 
@@ -311,7 +329,6 @@ public class DatabaseQueryGenerator extends DBConn {
 //		var test = new DatabaseQueryGenerator();
 //		var test1 = test.getTotalUserStats();
 //
-//		System.out.println(test1);
 	}
 }
 
