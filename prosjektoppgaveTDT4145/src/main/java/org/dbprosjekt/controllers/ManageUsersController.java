@@ -58,7 +58,7 @@ public class ManageUsersController {
             addMessage.setText("User already in course");
             return;
         }
-        queryGenerator.insertInCourse(email);
+        queryGenerator.insertInCourse(email, Session.getCourseID(), Session.getTerm());
         addMessage.setText("User successfully added");
     }
     @FXML

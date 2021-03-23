@@ -41,7 +41,8 @@ public class CourseController {
         }
         else{
             queryGenerator.insertCourse(id, term, allows);
-            Program2Controller.reload();
+            queryGenerator.insertInCourse(Session.getUserID(), id, term);
+            Program2Controller.initialize();
         }
     }
     @FXML

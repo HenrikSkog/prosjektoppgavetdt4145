@@ -234,8 +234,8 @@ public class DatabaseQueryGenerator extends DBConn {
 			System.out.println(e);
 		}
 	}
-    public void insertInCourse(String email) throws SQLException {
-        String queryString = "insert into InCourse (Email, SubjectID, Term) VALUES ('"+email+"','"+Session.getCourseID()+"','"+Session.getTerm()+"')";
+    public void insertInCourse(String email, String courseID, String term) throws SQLException {
+        String queryString = "insert into InCourse (Email, SubjectID, Term) VALUES ('"+email+"','"+courseID+"','"+term+"')";
         Statement statement = conn.createStatement();
         statement.execute(queryString);
     }
