@@ -20,6 +20,7 @@ import java.util.ArrayList;
 public class Program2Controller {
     private static VBox root;
     private static VBox leftVBox;
+    private static VBox rightVBox;
     private static Button lastFolder;
     private static Text errorMessage;
     private static Text path = new Text();
@@ -141,7 +142,7 @@ public class Program2Controller {
 
         ToolBar toolBar = new ToolBar(dropDown, newSubject, newCourse, manageFolders, manageUsers, newPost, viewStats, logOut, errorMessage);
         leftVBox = new VBox();
-        VBox rightVBox = new VBox();
+        rightVBox = new VBox();
         ScrollPane leftScrollPane = new ScrollPane(leftVBox);
         ScrollPane rightScrollPane = new ScrollPane(rightVBox);
         SplitPane splitPane = new SplitPane(leftScrollPane, rightScrollPane);
@@ -181,7 +182,11 @@ public class Program2Controller {
             folder.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    goToFolder(folderID, folder);
+                    try {
+                        goToFolder(folderID, folder);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
                 }
             });
             VBox sub = new VBox(nodeListToArray(subFolders(rs.getInt("FolderID"), 1)));
@@ -205,12 +210,59 @@ public class Program2Controller {
             folder.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    goToFolder(folderID, folder);
+                    try {
+                        goToFolder(folderID, folder);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
                 }
             });
             VBox sub = new VBox(nodeListToArray(subFolders(folderID, 1)));
             Text filler = new Text(space(5*(depth+1)));
             nodes.add(new VBox(folder, new HBox(filler, sub)));
+        }
+        return nodes;
+    }
+
+    private static ArrayList<Node> fillPosts() throws SQLException {
+        String queryString = "select * from ThreadPost as TP inner join ThreadInFolder as TIF on TP.PostID=TIF.PostID inner join Post as P on P.PostID=TP.PostID inner join User on P.Author=User.Email where TIF.FolderID='"+Session.getCurrentFolderID()+"'";
+        ResultSet rs = queryGenerator.query(queryString);
+        ArrayList<Node> nodes = new ArrayList<>();
+        if(rs==null)
+            return nodes;
+        while(rs.next()){
+            int postID = rs.getInt("P.PostID");
+            String tag = rs.getString("Tag");
+            String text = rs.getString("Text");
+            String title = rs.getString("Title");
+            String date = rs.getString("Date");
+            String time = rs.getString("Time");
+            boolean isAnonymous = rs.getBoolean("IsAnonymous");
+            String authorEmail = rs.getString("Email");
+            String authorUsername = rs.getString("Username");
+            String authorType = rs.getString("Type");
+            System.out.println(postID);
+            System.out.println(tag);
+            System.out.println(text);
+            System.out.println(date);
+            System.out.println(time);
+            System.out.println(isAnonymous);
+            System.out.println(authorEmail);
+            System.out.println(authorUsername);
+            System.out.println(authorType);
+            Text text1 = new Text(text);
+            Text text2 = new Text(title);
+            text2.setStyle("-fx-font-size: 20");
+            Text tag1 = new Text("#"+tag);
+            Text pID = new Text("ID: "+postID);
+            Text dAndT = new Text("Posted: "+date+" "+time);
+            Text userName = new Text("By: Anonymous user");
+            if (!isAnonymous)
+                userName.setText("By: "+authorUsername);
+            Text type = new Text(authorType);
+            HBox top = new HBox(10);
+            top.getChildren().addAll(dAndT, userName, tag1, pID);
+            nodes.add(new VBox(text2, top, text1));
         }
         return nodes;
     }
@@ -234,13 +286,14 @@ public class Program2Controller {
         return " ".repeat(Math.max(0, n));
     }
 
-    private static void goToFolder(int folderID, Button b){
+    private static void goToFolder(int folderID, Button b) throws SQLException {
         if (lastFolder!=null)
             lastFolder.setStyle(null);
         Session.setFolderID(folderID);
         b.setStyle("-fx-background-color: #80cdb8;");
         lastFolder = b;
         updatePath();
+        updatePots();
     }
 
     public static void reload() throws SQLException {
@@ -265,8 +318,10 @@ public class Program2Controller {
         errorMessage.setText(message);
     }
 
-    private static void updatePots(){
-
+    private static void updatePots() throws SQLException {
+        System.out.println("updatePosts");
+        rightVBox.getChildren().clear();
+        rightVBox.getChildren().addAll(nodeListToArray(fillPosts()));
     }
 
 }
