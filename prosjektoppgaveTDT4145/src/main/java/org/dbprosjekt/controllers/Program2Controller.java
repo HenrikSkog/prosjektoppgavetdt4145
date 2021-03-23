@@ -271,6 +271,7 @@ public class Program2Controller {
             return nodes;
         while(rs.next()){
             int postID = rs.getInt("P.PostID");
+            System.out.println(postID);
             String tag = rs.getString("Tag");
             String text = rs.getString("Text");
             String title = rs.getString("Title");
@@ -311,6 +312,7 @@ public class Program2Controller {
 
             bottom.getChildren().addAll(like, likes, reply);
             nodes.add(new VBox(text2, top, text1, bottom, new Text(" "), new HBox(new Text(space(10)),new VBox(nodeListToArray(replies(postID, 1))))));
+
         }
         return nodes;
     }
@@ -357,7 +359,21 @@ public class Program2Controller {
             addReplyHandling(reply, postID);
 
             bottom.getChildren().addAll(like, likes, reply);
-            nodes.add(new VBox(top, text1, bottom, new Text(" "), new HBox(new Text(space((depth)*10)), new VBox(nodeListToArray(replies(postID, depth+1))))));
+
+            var linkedPost = queryGenerator.getLinkedPost(Integer.toString(postID));
+
+            System.out.println(linkedPost);
+
+            if(linkedPost == null) {
+                nodes.add(new VBox(top, text1, bottom, new Text(" "), new HBox(new Text(space((depth)*10)), new VBox(nodeListToArray(replies(postID, depth+1))))));
+            } else {
+                Button linkBtn = new Button();
+                linkBtn.setText("Go to linked thread");
+                VBox box = new VBox(linkBtn, bottom);
+                nodes.add(new VBox(top, text1, box, new Text(" "), new HBox(new Text(space((depth)*10)), new VBox(nodeListToArray(replies(postID, depth+1))))));
+            }
+
+
         }
         return nodes;
     }

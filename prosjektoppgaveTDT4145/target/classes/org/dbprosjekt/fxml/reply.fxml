@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
+
 <AnchorPane xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dbprosjekt.controllers.ReplyController">
     <children>
-        <Text layoutX="10" layoutY="10" fx:id="path"/>
+        <Text fx:id="path" layoutX="10" layoutY="10" />
 
         <Text layoutX="100" layoutY="100">Reply to post</Text>
-        <CheckBox layoutX="100" layoutY="150" text="Make reply anonymous" fx:id="anonymous"/>
-        <TextArea fx:id="replyText" layoutX="100" layoutY="200"/>
-        <Button layoutX="100" layoutY="500" text="Post reply" onAction="#postReply"/>
+        <CheckBox fx:id="anonymous" layoutX="100" layoutY="150" text="Make reply anonymous" />
+        <TextArea fx:id="replyText" layoutX="100" layoutY="200" />
+        <Button layoutX="100" layoutY="500" onAction="#postReply" text="Post reply" />
 
-        <Button onAction="#goBack" layoutY="100" layoutX="700" text="Back" fx:id="back"/>
+        <Button fx:id="back" layoutX="700" layoutY="100" onAction="#goBack" text="Back" />
+      <TextField fx:id="linkInput" layoutX="98.0" layoutY="427.0" promptText="Initial post in thread ID" />
+      <Text layoutX="98.0" layoutY="416.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subject discussed in another thread? Link to it here" />
+      <Text fx:id="errorText" layoutX="100.0" layoutY="474.0" strokeType="OUTSIDE" strokeWidth="0.0" text=""/>
     </children>
 </AnchorPane>

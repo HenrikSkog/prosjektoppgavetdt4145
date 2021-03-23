@@ -10,6 +10,7 @@ import javafx.scene.text.Text;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class StatsController {
 
@@ -31,7 +32,8 @@ public class StatsController {
 
 	@FXML
 	public void initialize() throws SQLException {
-		//how many posts created and viewed in total
+		//about users
+		//how many posts users have created and viewed in total
 		var queryGenerator = new DatabaseQueryGenerator();
 		var stats = queryGenerator.getTotalUserStats();
 
@@ -59,13 +61,26 @@ public class StatsController {
 		String activeUsers = queryGenerator.getDailyActiveUsers();
 		activeUsersText.setText("Daily active users: " + activeUsers);
 
+		//about threads
 		//most active threads
 		var mostViewedThreads = queryGenerator.getActiveThreads();
+		var mostRepliedToThreads = queryGenerator.getMostRepliedToThreads();
+
+		//list with [title, viewed, repliedto]
+		var mostActiveThreads = new ArrayList<ArrayList<String>>();
+
+		mostViewedThreads.forEach(thread -> {
+			var curr = new ArrayList<String>();
+			curr.add(thread.get(1));
+			curr.add(thread.get(2));
+			curr.add(Integer.toString(mostRepliedToThreads.get(Integer.parseInt(thread.get(0)))));
+			mostActiveThreads.add(curr);
+		});
 
 		ObservableList<ThreadRow> threadData = FXCollections.observableArrayList();
 
-		mostViewedThreads.forEach(thread -> {
-			threadData.add(new ThreadRow(thread.get(1), thread.get(2), "halvor"));
+		mostActiveThreads.forEach(thread -> {
+			threadData.add(new ThreadRow(thread.get(0), thread.get(1), thread.get(2)));
 		});
 
 

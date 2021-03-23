@@ -1,5 +1,6 @@
 package org.dbprosjekt.database;
 
+import javafx.geometry.Pos;
 import org.dbprosjekt.controllers.Program2Controller;
 
 import java.sql.ResultSet;
@@ -92,11 +93,15 @@ public class DatabaseQueryGenerator extends DBConn {
 	}
 
 	public ArrayList<ArrayList<String>> getActiveThreads() throws SQLException {
+		//get views on posts
 		String queryString = "select TP.PostID, TP.Title, count(*) as num from ThreadPost TP join UserViewedThread UVT on TP.PostID = UVT.PostID group by TP.PostID;";
-
 		var rs = query(queryString);
+		var data = getSelectResult(rs, "PostID", "Title", "num");
+		return data;
+	}
 
-		queryString = "select * from ThreadPost as TP inner join Post as P on TP.PostID = P.PostID";
+	public HashMap<Integer, Integer> getMostRepliedToThreads() throws SQLException {
+		String queryString = "select * from ThreadPost as TP inner join Post as P on TP.PostID = P.PostID";
 		ResultSet rs2 = query(queryString);
 		HashMap<Integer, Integer> repliesToPost = new HashMap<>();
 		while (rs2.next()){
@@ -104,9 +109,7 @@ public class DatabaseQueryGenerator extends DBConn {
 			System.out.println(rs2.getInt("P.PostID")+", "+replies);
 			repliesToPost.put(rs2.getInt("P.PostID"), replies);
 		}
-		var data = getSelectResult(rs, "PostID", "Title", "num");
-
-		return data;
+		return repliesToPost;
 	}
 
 	private int getThreadSize(int postID, int depth) throws SQLException {
@@ -170,6 +173,17 @@ public class DatabaseQueryGenerator extends DBConn {
 		return false;
 	}
 
+	public boolean threadPostExists(String PostID) {
+		try {
+			var returnVal = queryHasResultRows("select PostID from ThreadPost where PostID=" + PostID);
+			return returnVal;
+		} catch(Exception e) {
+			System.out.println("Exception in thread post exists");
+			System.out.println(e.getMessage());
+		}
+		return true;
+	}
+
 	public String getLastInsertedID() {
 		try {
 			String query = "select LAST_INSERT_ID() as id";
@@ -185,6 +199,24 @@ public class DatabaseQueryGenerator extends DBConn {
 			System.out.println(e);
 			return null;
 		}
+	}
+
+	public String getLinkedPost(String PostID) {
+		try {
+			String queryString = "select LinkID from PostLink where PostID=" + PostID;
+			var rs = query(queryString);
+			var data = getSelectResult(rs, "LinkID");
+			System.out.println(queryString);
+			System.out.println("DATA: " + data);
+			try {
+				return data.get(0).get(0);
+			} catch(IndexOutOfBoundsException e) {
+				return null;
+			}
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
 	}
 
 	public String buildInsert(String table, String... values) {
@@ -237,6 +269,16 @@ public class DatabaseQueryGenerator extends DBConn {
 		} catch (Exception e) {
 			System.out.println("exception in post insert");
 			System.out.println(e.getMessage());
+		}
+	}
+
+	public void insertPostLink(String fromPostID, String toPostID) {
+		try {
+			Statement statement = conn.createStatement();
+			String queryString = buildInsert("PostLink", fromPostID, toPostID);
+			statement.execute(queryString);
+		} catch (Exception e) {
+			System.out.println(e);
 		}
 	}
 
