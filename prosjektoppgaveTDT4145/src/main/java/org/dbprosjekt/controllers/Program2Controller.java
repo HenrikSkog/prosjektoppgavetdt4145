@@ -126,6 +126,16 @@ public class Program2Controller {
 
         Button viewStats = new Button();
         viewStats.setText("View Statistics");
+        viewStats.setOnAction(event -> {
+            try {
+                if(Session.isAdmin())
+                    App.setRoot("stats");
+                else
+                    errorMessage.setText("Unauthorized");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        });
 
         Button logOut = new Button();
         logOut.setText("Log Out");
@@ -332,6 +342,7 @@ public class Program2Controller {
         lastFolder = b;
         updatePath();
         updatePots();
+        queryGenerator.insertThreadPostsViewedByUser(Integer.toString(folderID));
     }
 
     public static void reload() throws SQLException {

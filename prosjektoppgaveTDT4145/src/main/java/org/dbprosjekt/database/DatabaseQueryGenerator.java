@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class DatabaseQueryGenerator extends DBConn {
 	public DatabaseQueryGenerator() {
@@ -19,22 +21,25 @@ public class DatabaseQueryGenerator extends DBConn {
 			Statement statement = conn.createStatement();
 			return statement.executeQuery(queryString);
 		} catch (Exception e) {
+			System.out.println("exception in query method");
 			System.out.println(e.getCause());
 			return null;
 		}
 	}
 
-	public ArrayList<String> getSelectResult(ResultSet rs, String... properties) {
-		var res = new ArrayList<String>();
+	public ArrayList<ArrayList<String>> getSelectResult(ResultSet rs, String... properties) {
+		var res = new ArrayList<ArrayList<String>>();
 		try {
 			while (rs.next()) {
+				var row = new ArrayList<String>();
 				Arrays.asList(properties).forEach(property -> {
 					try {
-						res.add(rs.getString(property));
+						row.add(rs.getString(property));
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
 				});
+				res.add(row);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -56,13 +61,62 @@ public class DatabaseQueryGenerator extends DBConn {
 		}
 	}
 
+	public ArrayList<ArrayList<String>> getStats() {
+		String queryString = "SELECT q1.Email, viewedPosts, createdPosts FROM (select User.email as Email, count(U.Email) as viewedPosts from User left outer join UserViewedThread U on User.Email = U.Email group by User.Email) q1 left outer join (select Author as Email, count(*) as createdPosts from Post group by Author) q2 on q1.Email = q2.Email order by viewedPosts desc;";
+
+		var rs1 = query(queryString);
+		var data = getSelectResult(rs1, "Email", "viewedPosts", "createdPosts");
+
+//		removing nulls from result
+		for (int i = 0; i < data.size(); i++) {
+			for (int j = 0; j < data.get(i).size(); j++) {
+				if(data.get(i).get(j) == null)
+					data.get(i).set(j, "0");
+			}
+		}
+
+		return data;
+	}
+
+	private ArrayList<String> getPostIDsInFolder(String FolderID) {
+		try {
+		var rs = query("select ThreadPost.PostID from ThreadPost join ThreadInFolder TIF on ThreadPost.PostID = TIF.PostID where TIF.FolderID=" + FolderID);
+		var data = getSelectResult(rs, "PostID");
+
+		var onlyIds = (ArrayList<String>) data.stream().map(row -> row.get(0)).collect(Collectors.toList());
+
+		return onlyIds;
+		} catch(Exception e) {
+			System.out.println("exception in getting threadpost ids from folder");
+			System.out.println(e.getMessage());
+			return null;
+		}
+	}
+
+	public void insertThreadPostsViewedByUser(String FolderID) {
+		try {
+			var ids = getPostIDsInFolder(FolderID);
+			var userID = Session.getUserID();
+			Statement statement = conn.createStatement();
+			for (String id: ids) {
+				String query = buildInsert("UserViewedThread", userID, "CURDATE()", "CURTIME()", id);
+				statement.execute(query);
+			}
+
+		} catch(Exception e) {
+			System.out.println("exception in inserting threadposts viewed by user");
+			System.out.println(e.getMessage());
+		}
+
+	}
+
 	public boolean currentCourseAllowsAnonymous(){
 		try {
 			String queryString = "select * from Course where SubjectID='" + Session.getCourseID() + "' and Term='" + Session.getTerm() + "'";
 			var rs = query(queryString);
 			var data = getSelectResult(rs, "AllowsAnonymous");
 
-			if(data.get(0).equals("1")) {
+			if(data.get(0).get(0).equals("1")) {
 				return true;
 			}
 
@@ -83,7 +137,7 @@ public class DatabaseQueryGenerator extends DBConn {
 				return null;
 			}
 
-			return data.get(0);
+			return data.get(0).get(0);
 		} catch (Exception e) {
 			System.out.println(e);
 			return null;
@@ -133,6 +187,8 @@ public class DatabaseQueryGenerator extends DBConn {
 
 //            insert thread in folder
 			String insertThreadInFolderQueryString = buildInsert("ThreadInFolder", Integer.toString(Session.getCurrentFolderID()), id);
+
+			System.out.println(insertThreadInFolderQueryString);
 
 			statement.execute(insertThreadInFolderQueryString);
 
@@ -203,4 +259,12 @@ public class DatabaseQueryGenerator extends DBConn {
         Statement statement = conn.createStatement();
         statement.execute(queryString);
     }
+
+	public static void main(String[] args) {
+//		var test = new DatabaseQueryGenerator();
+//		var test1 = test.getStats();
+//
+//		System.out.println(test1);
+	}
 }
+
