@@ -6,10 +6,9 @@ module org.dbprosjekt {
     exports org.dbprosjekt.controllers to javafx.fxml;
     exports org.dbprosjekt to javafx.graphics;
 
-    opens org.dbprosjekt.controllers to javafx.fxml;
+    opens org.dbprosjekt.controllers to javafx.fxml, javafx.base;
 
     opens org.dbprosjekt;
-
 
 
 }
