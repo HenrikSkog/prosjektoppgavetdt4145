@@ -218,7 +218,7 @@ public class Program2Controller {
                 }
             });
             VBox sub = new VBox(nodeListToArray(subFolders(folderID, 1)));
-            Text filler = new Text(space(5*(depth+1)));
+            Text filler = new Text(space(5*(depth)));
             nodes.add(new VBox(folder, new HBox(filler, sub)));
         }
         return nodes;
@@ -241,15 +241,6 @@ public class Program2Controller {
             String authorEmail = rs.getString("Email");
             String authorUsername = rs.getString("Username");
             String authorType = rs.getString("Type");
-            System.out.println(postID);
-            System.out.println(tag);
-            System.out.println(text);
-            System.out.println(date);
-            System.out.println(time);
-            System.out.println(isAnonymous);
-            System.out.println(authorEmail);
-            System.out.println(authorUsername);
-            System.out.println(authorType);
             Text text1 = new Text(text);
             Text text2 = new Text(title);
             text2.setStyle("-fx-font-size: 20");
@@ -260,9 +251,56 @@ public class Program2Controller {
             if (!isAnonymous)
                 userName.setText("By: "+authorUsername);
             Text type = new Text(authorType);
-            HBox top = new HBox(10);
+            HBox top = new HBox(20);
             top.getChildren().addAll(dAndT, userName, tag1, pID);
-            nodes.add(new VBox(text2, top, text1));
+            HBox bottom = new HBox(20);
+            Button like = new Button("Like");
+            Button reply = new Button("Reply");
+            bottom.getChildren().addAll(like, reply);
+            nodes.add(new VBox(text2, top, text1, bottom, new Text(" "), new HBox(new Text(space(5)),new VBox(nodeListToArray(replies(postID, 1))))));
+        }
+        return nodes;
+    }
+
+    private static ArrayList<Node> replies(int parentID, int depth) throws SQLException {
+        String queryString = "select * from Reply as R inner join Post as P on P.PostID=R.PostID inner join User on P.Author=User.Email where R.ReplyToID='"+parentID+"'";
+        ResultSet rs = queryGenerator.query(queryString);
+        ArrayList<Node> nodes = new ArrayList<>();
+        if(rs==null)
+            return nodes;
+        while(rs.next()){
+            int postID = rs.getInt("P.PostID");
+            String text = rs.getString("Text");
+            String date = rs.getString("Date");
+            String time = rs.getString("Time");
+            boolean isAnonymous = rs.getBoolean("IsAnonymous");
+            String authorEmail = rs.getString("Email");
+            String authorUsername = rs.getString("Username");
+            String authorType = rs.getString("Type");
+            Text pID = new Text("ID: "+postID);
+            Text text1 = new Text(text);
+            Text dAndT = new Text("Posted: "+date+" "+time);
+            Text userName = new Text("By: Anonymous user");
+            if (!isAnonymous)
+                userName.setText("By: "+authorUsername);
+            Text type = new Text(authorType);
+            HBox top = new HBox(20);
+            top.getChildren().addAll(dAndT, userName, pID);
+            HBox bottom = new HBox(20);
+            Button like = new Button("Like");
+            queryString = "select * from User as U inner join UserLikedPost as ULP on U.Email=ULP.Email where User.Email='"+Session.getUserID()+"'";
+            if(queryGenerator.queryHasResultRows(queryString)){
+                like.setText("Liked");
+            }
+            like.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+
+                }
+            });
+            Button reply = new Button("Reply");
+            bottom.getChildren().addAll(like, reply);
+            nodes.add(new VBox(top, text1, bottom, new Text(" "), new HBox(new Text(space((depth)*5)), new VBox(nodeListToArray(replies(postID, depth+1))))));
         }
         return nodes;
     }
