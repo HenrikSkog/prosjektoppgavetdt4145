@@ -1,6 +1,7 @@
 package org.dbprosjekt.controllers;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -254,10 +255,25 @@ public class Program2Controller {
             HBox top = new HBox(20);
             top.getChildren().addAll(dAndT, userName, tag1, pID);
             HBox bottom = new HBox(20);
+
+            Text likes = new Text("Likes: "+queryGenerator.getLikes(postID));
+
             Button like = new Button("Like");
+            queryString = "select * from User as U inner join UserLikedPost as ULP on U.Email=ULP.Email where U.Email='"+Session.getUserID()+"' and ULP.PostID='"+postID+"'";
+            System.out.println(queryGenerator.queryHasResultRows(queryString));
+            if(queryGenerator.queryHasResultRows(queryString)){
+                like.setText("Liked");
+                addLikeHandling(like, postID);
+            }
+            else{
+                addUnlikeHandling(like, postID);
+            }
+
             Button reply = new Button("Reply");
-            bottom.getChildren().addAll(like, reply);
-            nodes.add(new VBox(text2, top, text1, bottom, new Text(" "), new HBox(new Text(space(5)),new VBox(nodeListToArray(replies(postID, 1))))));
+            addReplyHandling(reply, postID);
+
+            bottom.getChildren().addAll(like, likes, reply);
+            nodes.add(new VBox(text2, top, text1, bottom, new Text(" "), new HBox(new Text(space(10)),new VBox(nodeListToArray(replies(postID, 1))))));
         }
         return nodes;
     }
@@ -287,20 +303,25 @@ public class Program2Controller {
             HBox top = new HBox(20);
             top.getChildren().addAll(dAndT, userName, pID);
             HBox bottom = new HBox(20);
+
+            Text likes = new Text("Likes: "+queryGenerator.getLikes(postID));
+
             Button like = new Button("Like");
-            queryString = "select * from User as U inner join UserLikedPost as ULP on U.Email=ULP.Email where User.Email='"+Session.getUserID()+"'";
+            queryString = "select * from User as U inner join UserLikedPost as ULP on U.Email=ULP.Email where U.Email='"+Session.getUserID()+"' and ULP.PostID='"+postID+"'";
+            System.out.println(queryGenerator.queryHasResultRows(queryString));
             if(queryGenerator.queryHasResultRows(queryString)){
                 like.setText("Liked");
+                addLikeHandling(like, postID);
             }
-            like.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
+            else{
+                addUnlikeHandling(like, postID);
+            }
 
-                }
-            });
             Button reply = new Button("Reply");
-            bottom.getChildren().addAll(like, reply);
-            nodes.add(new VBox(top, text1, bottom, new Text(" "), new HBox(new Text(space((depth)*5)), new VBox(nodeListToArray(replies(postID, depth+1))))));
+            addReplyHandling(reply, postID);
+
+            bottom.getChildren().addAll(like, likes, reply);
+            nodes.add(new VBox(top, text1, bottom, new Text(" "), new HBox(new Text(space((depth)*10)), new VBox(nodeListToArray(replies(postID, depth+1))))));
         }
         return nodes;
     }
@@ -360,6 +381,48 @@ public class Program2Controller {
         System.out.println("updatePosts");
         rightVBox.getChildren().clear();
         rightVBox.getChildren().addAll(nodeListToArray(fillPosts()));
+    }
+    private static void addLikeHandling(Button like, int postID){
+        like.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                System.out.println("removing");
+                try {
+                    queryGenerator.removeLike(Session.getUserID(), postID);
+                    updatePots();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        });
+    }
+    private static void addUnlikeHandling(Button like, int postID){
+        like.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                System.out.println("adding");
+                try {
+                    queryGenerator.insertLike(Session.getUserID(), postID);
+                    updatePots();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        });
+    }
+    private static void addReplyHandling(Button reply, int postID){
+        reply.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Session.setReplyingToID(postID);
+                try {
+                    App.setRoot("reply");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 
 }

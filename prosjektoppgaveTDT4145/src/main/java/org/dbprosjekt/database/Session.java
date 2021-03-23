@@ -17,6 +17,14 @@ public abstract class Session {
 
     private static boolean isAdmin;
 
+    private static int replyingToID;
+
+    public static void setReplyingToID(int id){
+        replyingToID = id;
+    }
+    public static int getReplyingToID(){
+        return replyingToID;
+    }
     public static void setUserID(String id){
         userID = id;
     }

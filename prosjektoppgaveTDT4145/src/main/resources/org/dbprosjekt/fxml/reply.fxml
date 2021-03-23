@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Text?>
+<AnchorPane xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dbprosjekt.controllers.ReplyController">
+    <children>
+        <Text layoutX="10" layoutY="10" fx:id="path"/>
+
+        <Text layoutX="100" layoutY="100">Reply to post</Text>
+        <CheckBox layoutX="100" layoutY="150" text="Make reply anonymous" fx:id="anonymous"/>
+        <TextArea fx:id="replyText" layoutX="100" layoutY="200"/>
+        <Button layoutX="100" layoutY="500" text="Post reply" onAction="#postReply"/>
+
+        <Button onAction="#goBack" layoutY="100" layoutX="700" text="Back" fx:id="back"/>
+    </children>
+</AnchorPane>
