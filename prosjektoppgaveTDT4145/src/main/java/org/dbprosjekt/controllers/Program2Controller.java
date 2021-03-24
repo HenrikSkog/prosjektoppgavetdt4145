@@ -1,15 +1,12 @@
 package org.dbprosjekt.controllers;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -50,72 +47,63 @@ public class Program2Controller {
 
         Button newSubject = new Button();
         newSubject.setText("New Subject");
-        newSubject.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                try {
-                    if(!Session.isAdmin()){
-                        errorMessage.setText("This action requires admin rights");
-                        return;
-                    }
-                    App.setRoot("subject");
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
+        newSubject.setOnAction(e -> {
+            try {
+                if(!Session.isAdmin()){
+                    errorMessage.setText("This action requires admin rights");
+                    return;
                 }
+                App.setRoot("subject");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
             }
         });
 
         Button newCourse = new Button();
         newCourse.setText("New Course");
-        newCourse.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                try {
-                    if(!Session.isAdmin()){
-                        errorMessage.setText("This action requires admin rights");
-                        return;
-                    }
-                    App.setRoot("course");
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
+        newCourse.setOnAction(e -> {
+            try {
+                if(!Session.isAdmin()){
+                    errorMessage.setText("This action requires admin rights");
+                    return;
                 }
+                App.setRoot("course");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
             }
         });
 
         Button manageFolders = new Button();
         manageFolders.setText("Manage Folders");
-        manageFolders.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                try {
-                    if(!Session.isAdmin()){
-                        errorMessage.setText("This action requires admin rights");
-                        return;
-                    }
-                    if(Session.getCourseID()!=null)
-                        App.setRoot("folder");
-                    else
-                        errorMessage.setText("Please select a course");
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
+        manageFolders.setOnAction(e -> {
+            try {
+                if(!Session.isAdmin()){
+                    errorMessage.setText("This action requires admin rights");
+                    return;
                 }
+                if(Session.getCourseID()!=null)
+                    App.setRoot("folder");
+                else
+                    errorMessage.setText("Please select a course");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
             }
         });
 
         Button manageUsers = new Button();
         manageUsers.setText("Manage Users");
-        manageUsers.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                try {
-                    if(!Session.isAdmin()){
-                        errorMessage.setText("This action requires admin rights");
-                        return;
-                    }
-                    if(Session.getCourseID()!=null)
-                        App.setRoot("manageUsers");
-                    else
-                        errorMessage.setText("Please select a course");
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
+        manageUsers.setOnAction(actionEvent -> {
+            try {
+                if(!Session.isAdmin()){
+                    errorMessage.setText("This action requires admin rights");
+                    return;
                 }
+                if(Session.getCourseID()!=null)
+                    App.setRoot("manageUsers");
+                else
+                    errorMessage.setText("Please select a course");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
             }
         });
 
@@ -147,23 +135,18 @@ public class Program2Controller {
 
         Button logOut = new Button();
         logOut.setText("Log Out");
-        logOut.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
+        logOut.setOnAction(event -> {
                 try {
                     handleLogOut();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
         });
 
         TextField searchInput = new TextField();
         searchInput.setPromptText("Enter keywords");
         Button search = new Button("Search");
-        search.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
+        search.setOnAction(event -> {
                 if(Session.getCourseID()==null){
                     errorMessage.setText("Please select a course");
                     return;
@@ -174,7 +157,6 @@ public class Program2Controller {
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
-            }
         });
 
         ToolBar toolBar = new ToolBar(dropDown, newSubject, newCourse, manageFolders, manageUsers, newPost, viewStats, searchInput, search, logOut, errorMessage);
@@ -222,14 +204,11 @@ public class Program2Controller {
             Button folder = new Button(rs.getString("Name")+"  "+"ID: "+folderID);
             if(folderID!=0 && folderID==Session.getCurrentFolderID())
                 goToFolder(folderID, folder);
-            folder.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    try {
-                        goToFolder(folderID, folder);
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
-                    }
+            folder.setOnAction(actionEvent -> {
+                try {
+                    goToFolder(folderID, folder);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
                 }
             });
             VBox sub = new VBox(nodeListToArray(subFolders(rs.getInt("FolderID"), 1)));
@@ -385,7 +364,7 @@ public class Program2Controller {
             if(linkedPostID == null) {
                 postVBox.getChildren().addAll(top, text1, bottom, new Text(" "), new HBox(new Text(space((depth)*10)), new VBox(nodeListToArray(replies(postID, depth+1)))));
             } else {
-                Text linkText = new Text("This link has a link to thread with id: " + linkedPostID);
+                Text linkText = new Text("This reply has a link to thread with id: " + linkedPostID);
                 linkText.setStyle("-fx-font-style: italic");
 
                 Button linkBtn = new Button("Go to linked thread");
@@ -490,47 +469,38 @@ public class Program2Controller {
     }
     //Legger til funksjonalitet på like-knappene
     private static void addLikeHandling(Button like, int postID){
-        like.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                System.out.println("removing");
-                try {
-                    queryGenerator.removeLike(Session.getUserID(), postID);
-                    updatePots();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
+        like.setOnAction(actionEvent -> {
+            System.out.println("removing");
+            try {
+                queryGenerator.removeLike(Session.getUserID(), postID);
+                updatePots();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
         });
     }
     //Legger til funksjonalitet på liked-knappene
     private static void addUnlikeHandling(Button like, int postID){
-        like.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                System.out.println("adding");
-                try {
-                    queryGenerator.insertLike(Session.getUserID(), postID);
-                    updatePots();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
+        like.setOnAction(actionEvent -> {
+            System.out.println("adding");
+            try {
+                queryGenerator.insertLike(Session.getUserID(), postID);
+                updatePots();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
         });
     }
     //Legger til funksjonalitet på reply-knappene
     private static void addReplyHandling(Button reply, int postID){
-        reply.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                Session.setReplyingToID(postID);
-                try {
-                    App.setRoot("reply");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+        reply.setOnAction(actionEvent -> {
+            Session.setReplyingToID(postID);
+            try {
+                App.setRoot("reply");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
         });
     }
     private static void addLinkHandling(Button btn, int linkedPostID) {
