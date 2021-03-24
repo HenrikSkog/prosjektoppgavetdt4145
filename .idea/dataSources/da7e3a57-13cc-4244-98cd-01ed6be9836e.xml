@@ -876,9 +876,9 @@
       <ObjectGrants>ALL PRIVILEGES|halvor_prosjekt
 </ObjectGrants>
     </user>
-    <table id="277" parent="2" name="AdminInCourse"/>
-    <table id="278" parent="2" name="Course"/>
-    <table id="279" parent="2" name="Folder"/>
+    <table id="277" parent="2" name="Course"/>
+    <table id="278" parent="2" name="Folder"/>
+    <table id="279" parent="2" name="InCourse"/>
     <table id="280" parent="2" name="Post"/>
     <table id="281" parent="2" name="PostLink"/>
     <table id="282" parent="2" name="Reply"/>
@@ -888,39 +888,75 @@
     <table id="286" parent="2" name="User"/>
     <table id="287" parent="2" name="UserLikedPost"/>
     <table id="288" parent="2" name="UserViewedThread"/>
-    <column id="289" parent="277" name="Email">
+    <column id="289" parent="277" name="SubjectID">
       <Position>1</Position>
-      <DataType>varchar(50)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="290" parent="277" name="SubjectID">
-      <Position>2</Position>
       <DataType>varchar(30)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="291" parent="277" name="Term">
+    <column id="290" parent="277" name="Term">
+      <Position>2</Position>
+      <DataType>varchar(20)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="291" parent="277" name="AllowsAnonymous">
       <Position>3</Position>
+      <DataType>tinyint(1)|0s</DataType>
+    </column>
+    <key id="292" parent="277" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>SubjectID
+Term</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="293" parent="277" name="Course_ibfk_1">
+      <ColNames>SubjectID</ColNames>
+      <RefTableName>Subject</RefTableName>
+      <RefColNames>SubjectID</RefColNames>
+    </foreign-key>
+    <column id="294" parent="278" name="FolderID">
+      <Position>1</Position>
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="295" parent="278" name="Name">
+      <Position>2</Position>
+      <DataType>varchar(30)|0s</DataType>
+    </column>
+    <column id="296" parent="278" name="ParentID">
+      <Position>3</Position>
+      <DataType>int|0s</DataType>
+    </column>
+    <column id="297" parent="278" name="SubjectID">
+      <Position>4</Position>
+      <DataType>varchar(30)|0s</DataType>
+    </column>
+    <column id="298" parent="278" name="Term">
+      <Position>5</Position>
       <DataType>varchar(20)|0s</DataType>
     </column>
-    <index id="292" parent="277" name="SubjectID">
+    <index id="299" parent="278" name="ParentID">
+      <ColNames>ParentID</ColNames>
+      <Type>btree</Type>
+    </index>
+    <index id="300" parent="278" name="SubjectID">
       <ColNames>SubjectID
 Term</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="293" parent="277" name="PRIMARY">
+    <key id="301" parent="278" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
-      <ColNames>Email
-SubjectID</ColNames>
+      <ColNames>FolderID</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="294" parent="277" name="AdminInCourse_ibfk_1">
-      <ColNames>Email</ColNames>
-      <RefTableName>User</RefTableName>
-      <RefColNames>Email</RefColNames>
+    <foreign-key id="302" parent="278" name="Folder_ibfk_1">
+      <ColNames>ParentID</ColNames>
+      <RefTableName>Folder</RefTableName>
+      <RefColNames>FolderID</RefColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="295" parent="277" name="AdminInCourse_ibfk_2">
+    <foreign-key id="303" parent="278" name="Folder_ibfk_2">
       <ColNames>SubjectID
 Term</ColNames>
       <RefTableName>Course</RefTableName>
@@ -929,57 +965,21 @@ Term</RefColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <column id="296" parent="278" name="SubjectID">
+    <column id="304" parent="279" name="Email">
       <Position>1</Position>
+      <DataType>varchar(50)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="305" parent="279" name="SubjectID">
+      <Position>2</Position>
       <DataType>varchar(30)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="297" parent="278" name="Term">
-      <Position>2</Position>
+    <column id="306" parent="279" name="Term">
+      <Position>3</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="298" parent="278" name="AllowsAnonymous">
-      <Position>3</Position>
-      <DataType>tinyint(1)|0s</DataType>
-    </column>
-    <key id="299" parent="278" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>SubjectID
-Term</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <foreign-key id="300" parent="278" name="Course_ibfk_1">
-      <ColNames>SubjectID</ColNames>
-      <RefTableName>Subject</RefTableName>
-      <RefColNames>SubjectID</RefColNames>
-    </foreign-key>
-    <column id="301" parent="279" name="FolderID">
-      <Position>1</Position>
-      <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
-      <SequenceIdentity>null</SequenceIdentity>
-    </column>
-    <column id="302" parent="279" name="Name">
-      <Position>2</Position>
-      <DataType>varchar(30)|0s</DataType>
-    </column>
-    <column id="303" parent="279" name="ParentID">
-      <Position>3</Position>
-      <DataType>int|0s</DataType>
-    </column>
-    <column id="304" parent="279" name="SubjectID">
-      <Position>4</Position>
-      <DataType>varchar(30)|0s</DataType>
-    </column>
-    <column id="305" parent="279" name="Term">
-      <Position>5</Position>
-      <DataType>varchar(20)|0s</DataType>
-    </column>
-    <index id="306" parent="279" name="ParentID">
-      <ColNames>ParentID</ColNames>
-      <Type>btree</Type>
-    </index>
     <index id="307" parent="279" name="SubjectID">
       <ColNames>SubjectID
 Term</ColNames>
@@ -987,17 +987,19 @@ Term</ColNames>
     </index>
     <key id="308" parent="279" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
-      <ColNames>FolderID</ColNames>
+      <ColNames>Email
+SubjectID
+Term</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="309" parent="279" name="Folder_ibfk_1">
-      <ColNames>ParentID</ColNames>
-      <RefTableName>Folder</RefTableName>
-      <RefColNames>FolderID</RefColNames>
+    <foreign-key id="309" parent="279" name="InCourse_ibfk_1">
+      <ColNames>Email</ColNames>
+      <RefTableName>User</RefTableName>
+      <RefColNames>Email</RefColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="310" parent="279" name="Folder_ibfk_2">
+    <foreign-key id="310" parent="279" name="InCourse_ibfk_2">
       <ColNames>SubjectID
 Term</ColNames>
       <RefTableName>Course</RefTableName>

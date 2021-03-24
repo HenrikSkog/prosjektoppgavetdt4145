@@ -4,10 +4,13 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.dbprosjekt.App;
 import org.dbprosjekt.Course;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
@@ -360,15 +363,13 @@ public class Program2Controller {
 
             bottom.getChildren().addAll(like, likes, reply);
 
-            var linkedPost = queryGenerator.getLinkedPost(Integer.toString(postID));
+            var linkedPostID = queryGenerator.getLinkedPost(Integer.toString(postID));
 
-            System.out.println(linkedPost);
-
-            if(linkedPost == null) {
+            if(linkedPostID == null) {
                 nodes.add(new VBox(top, text1, bottom, new Text(" "), new HBox(new Text(space((depth)*10)), new VBox(nodeListToArray(replies(postID, depth+1))))));
             } else {
-                Button linkBtn = new Button();
-                linkBtn.setText("Go to linked thread");
+                Button linkBtn = new Button("Go to linked thread");
+                addLinkHandling(linkBtn, Integer.parseInt(linkedPostID));
                 VBox box = new VBox(linkBtn, bottom);
                 nodes.add(new VBox(top, text1, box, new Text(" "), new HBox(new Text(space((depth)*10)), new VBox(nodeListToArray(replies(postID, depth+1))))));
             }
@@ -406,6 +407,26 @@ public class Program2Controller {
         updatePath();
         updatePots();
         queryGenerator.insertThreadPostsViewedByUser(Integer.toString(folderID));
+    }
+
+    private static void openLinkedThreadInModal(int linkedPostID, ActionEvent event) throws SQLException {
+        String queryString = "select * from ThreadPost as TP inner join ThreadInFolder as TIF on TP.PostID=TIF.PostID inner join Post as P on P.PostID=TP.PostID inner join User on P.Author=User.Email where TP.PostID="+linkedPostID;
+        ResultSet rs = queryGenerator.query(queryString);
+
+        var nodes = postsFromResultSet(rs);
+        var nodesArray = nodeListToArray(nodes);
+
+        var vbox = new VBox(nodesArray);
+        var scrollPane = new ScrollPane(vbox);
+
+        var modal = new Stage();
+        modal.setScene(new Scene(scrollPane));
+
+        modal.setTitle("Linked thread");
+        modal.initModality(Modality.WINDOW_MODAL);
+        modal.initOwner(((Node)event.getSource()).getScene().getWindow());
+        modal.show();
+
     }
 
     public static void reload() throws SQLException {
@@ -477,5 +498,13 @@ public class Program2Controller {
             }
         });
     }
-
+    private static void addLinkHandling(Button btn, int linkedPostID) {
+        btn.setOnAction(event -> {
+                try {
+                    openLinkedThreadInModal(linkedPostID, event);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        });
+    }
 }

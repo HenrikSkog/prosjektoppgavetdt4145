@@ -64,7 +64,7 @@ public class DatabaseQueryGenerator extends DBConn {
 	}
 
 	public String getDailyActiveUsers() {
-		String queryString = "select count(*) as num from UserViewedThread u where date(u.date) = date(curdate())";
+		String queryString = "select count(distinct Email) as num from UserViewedThread u where date(u.date) = date(curdate())";
 		var rs = query(queryString);
 		var data = getSelectResult(rs, "num");
 
@@ -75,14 +75,25 @@ public class DatabaseQueryGenerator extends DBConn {
 		return data.get(0).get(0);
 	}
 
-	public ArrayList<ArrayList<String>> getTotalUserStats() {
+	public ArrayList<ArrayList<String>> getTotalUserStats() throws SQLException {
 		String queryString = "SELECT q1.Email, viewedPosts, createdPosts FROM (select User.email as Email, count(U.Email) as viewedPosts from User left outer join UserViewedThread U on User.Email = U.Email group by User.Email) q1 left outer join (select Author as Email, count(*) as createdPosts from Post group by Author) q2 on q1.Email = q2.Email order by viewedPosts desc;";
 
 		var rs = query(queryString);
 		var data = getSelectResult(rs, "Email", "viewedPosts", "createdPosts");
 
-//		removing nulls from result
+		//getting usernames
+		var usersRS = query("select username, email from User");
+		var users = new HashMap<String, String>();
+		while(usersRS.next()) {
+			String username = usersRS.getString("username");
+			String email = usersRS.getString("email");
+			users.put(email, username);
+		}
+
+
+//		removing nulls from result and switching emails with usernames
 		for (int i = 0; i < data.size(); i++) {
+			data.get(i).set(0, users.get(data.get(i).get(0)));
 			for (int j = 0; j < data.get(i).size(); j++) {
 				if(data.get(i).get(j) == null)
 					data.get(i).set(j, "0");
@@ -173,9 +184,9 @@ public class DatabaseQueryGenerator extends DBConn {
 		return false;
 	}
 
-	public boolean threadPostExists(String PostID) {
+	public boolean threadPostExists(String postID) {
 		try {
-			var returnVal = queryHasResultRows("select PostID from ThreadPost where PostID=" + PostID);
+			var returnVal = queryHasResultRows("select PostID from ThreadPost where PostID="+postID);
 			return returnVal;
 		} catch(Exception e) {
 			System.out.println("Exception in thread post exists");
