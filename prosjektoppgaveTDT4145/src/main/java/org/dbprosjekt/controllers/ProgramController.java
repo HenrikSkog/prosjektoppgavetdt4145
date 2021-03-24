@@ -401,6 +401,7 @@ public class ProgramController {
         var scrollPane = new ScrollPane(vbox);
 
         var modal = new Stage();
+        modal.setMaximized(true);
         modal.setScene(new Scene(scrollPane));
 
         modal.setTitle("Linked thread");
