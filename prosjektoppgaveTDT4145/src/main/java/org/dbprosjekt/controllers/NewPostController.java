@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+//Kontrollerer oppretting av nye posts
 public class NewPostController {
 	@FXML
 	TextField titleInput;
@@ -29,6 +30,7 @@ public class NewPostController {
 	CheckBox anonymousBox;
 
 	@FXML
+	//Oppretter en ny post i mappen programmet befinner seg i
 	public void newPost() throws SQLException {
 		var queryGenerator = new DatabaseQueryGenerator();
 
@@ -49,11 +51,13 @@ public class NewPostController {
 	}
 
 	@FXML
+	//Går tilbake til hovedvinduet
 	public void back() throws SQLException {
 		Program2Controller.reload();
 	}
 
 	@FXML
+	//sjekker om det skal være mulig å poste anonymt og oppretter mulighet for dette
 	public void initialize() {
 		var queryGenerator = new DatabaseQueryGenerator();
 		boolean allowsAnon = queryGenerator.currentCourseAllowsAnonymous();

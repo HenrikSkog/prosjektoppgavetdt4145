@@ -18,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+//Kontrollerer all funksjonalitet i hovedvinduet
 public class Program2Controller {
     private static VBox root;
     private static VBox leftVBox;
@@ -26,6 +27,7 @@ public class Program2Controller {
     private static Text errorMessage;
     private static Text path = new Text();
     private static DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
+    //Oppretter guien i hovedvinduet og legger til funksjonalitet på elementer
     public static void initialize() throws SQLException {
         System.out.println("init");
         errorMessage = new Text();
@@ -182,6 +184,7 @@ public class Program2Controller {
         root = vBox;
         updatePath();
     }
+    //Fyller dropdown-menyen med courses den påloggede brukeren er med i
     private static void fillDropDown(ComboBox<Course> combo) throws SQLException {
         String queryString = "select Subject.SubjectID, Course.Term, Subject.name from Course inner join Subject on Course.SubjectID = Subject.SubjectID inner join InCourse on Subject.SubjectID = InCourse.SubjectID and Course.Term = InCourse.Term inner join User on InCourse.Email = User.Email where User.Email='"+Session.getUserID()+"'";
         ResultSet rs = queryGenerator.query(queryString);
@@ -194,6 +197,7 @@ public class Program2Controller {
         }
         combo.setItems(FXCollections.observableArrayList(courses));
     }
+    //Utløses når bruker velger et course. Oppdaterer Session, og laster inn folders og posts
     private static void selectCourse(Course course) throws SQLException {
         Session.setCourseID(course.getId());
         Session.setTerm(course.getTerm());
@@ -201,6 +205,7 @@ public class Program2Controller {
         updateFolders();
         updatePots();
     }
+    //Returnerer en liste med JavaFX-elementer som inneholder alle folders i courset bruker befinner seg i.
     private static ArrayList<Node> fillFolders() throws SQLException {
         String queryString = "select FolderID, Name from Folder where ParentID is null and SubjectID='"+Session.getCourseID()+"' and Term='"+Session.getTerm()+"'";
         ResultSet rs = queryGenerator.query(queryString);
@@ -228,6 +233,7 @@ public class Program2Controller {
         }
         return nodes;
     }
+    //Calles fra funksjonen over og returnerer rekursivt lister med folders i form av JavaFX-elementer
     private static ArrayList<Node> subFolders(int parentID, int depth) throws SQLException {
         String queryString = "select FolderID, Name from Folder where ParentID="+parentID;
         ResultSet rs = queryGenerator.query(queryString);
@@ -257,6 +263,7 @@ public class Program2Controller {
         return nodes;
     }
 
+    //Returnerer en liste med posts i form av JavaFX-elementer for staten til programmet
     private static ArrayList<Node> fillPosts() throws SQLException {
         String queryString = "select * from ThreadPost as TP inner join ThreadInFolder as TIF on TP.PostID=TIF.PostID inner join Post as P on P.PostID=TP.PostID inner join User on P.Author=User.Email where TIF.FolderID='"+Session.getCurrentFolderID()+"'";
         ResultSet rs = queryGenerator.query(queryString);
@@ -264,6 +271,7 @@ public class Program2Controller {
         return postsFromResultSet(rs);
     }
 
+    //Returner en liste med posts basert på et resultset med posts
     public static ArrayList<Node> postsFromResultSet(ResultSet rs) throws SQLException {
         String queryString;
         ArrayList<Node> nodes = new ArrayList<>();
@@ -315,6 +323,7 @@ public class Program2Controller {
         return nodes;
     }
 
+    //Returner en liste med replies i form av JavaFX-elementer rekursivt
     private static ArrayList<Node> replies(int parentID, int depth) throws SQLException {
         String queryString = "select * from Reply as R inner join Post as P on P.PostID=R.PostID inner join User on P.Author=User.Email where R.ReplyToID='"+parentID+"'";
         ResultSet rs = queryGenerator.query(queryString);
@@ -362,6 +371,7 @@ public class Program2Controller {
         return nodes;
     }
 
+    //tar inn en list med nodes og returnerer en array
     public static Node[] nodeListToArray(ArrayList<Node> list){
         Node[] nodes = new Node[list.size()];
         for(int i = 0; i<list.size(); i++){
@@ -370,6 +380,7 @@ public class Program2Controller {
         return nodes;
     }
 
+    //Oppdaterer guien med folders for courset programmet befinner seg i.
     private static void updateFolders() throws SQLException {
         System.out.println("updateFolders");
         leftVBox.getChildren().clear();
@@ -377,10 +388,12 @@ public class Program2Controller {
         updatePath();
     }
 
+    //Returnerer en string med n mellomrom
     public static String space(int n){
         return " ".repeat(Math.max(0, n));
     }
 
+    //Oppdaterer Session og gui når en mappe trykkes på
     private static void goToFolder(int folderID, Button b) throws SQLException {
         if (lastFolder!=null)
             lastFolder.setStyle(null);
@@ -392,12 +405,14 @@ public class Program2Controller {
         queryGenerator.insertThreadPostsViewedByUser(Integer.toString(folderID));
     }
 
+    //Oppdaterer folders og posts og setter scenen til hovedvinduet
     public static void reload() throws SQLException {
         App.setRoot(root);
         updateFolders();
         updatePath();
     }
 
+    //Nullstiller Session og oppdaterer scene til login når bruker trykker på log out
     private static void handleLogOut() throws IOException {
         Session.setUserID(null);
         Session.setFolderID(0);
@@ -406,19 +421,23 @@ public class Program2Controller {
         App.setRoot("login");
     }
 
+    //Setter teksten med state på toppen av skjermen
     public static void updatePath(){
         path.setText("  "+Session.ToString());
     }
 
+    //Setter feilmeldingen i hovedvinduet
     public static void setErrorMessage(String message){
         errorMessage.setText(message);
     }
 
+    //Oppdaterer guien med posts
     private static void updatePots() throws SQLException {
         System.out.println("updatePosts");
         rightVBox.getChildren().clear();
         rightVBox.getChildren().addAll(nodeListToArray(fillPosts()));
     }
+    //Legger til funksjonalitet på like-knappene
     private static void addLikeHandling(Button like, int postID){
         like.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -433,6 +452,7 @@ public class Program2Controller {
             }
         });
     }
+    //Legger til funksjonalitet på liked-knappene
     private static void addUnlikeHandling(Button like, int postID){
         like.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -447,6 +467,7 @@ public class Program2Controller {
             }
         });
     }
+    //Legger til funksjonalitet på reply-knappene
     private static void addReplyHandling(Button reply, int postID){
         reply.setOnAction(new EventHandler<ActionEvent>() {
             @Override

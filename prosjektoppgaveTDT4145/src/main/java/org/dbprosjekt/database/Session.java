@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+//Holder orden på programmets state
 public abstract class Session {
     private static final DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
 
@@ -55,12 +56,15 @@ public abstract class Session {
     public static void setAdmin(boolean b){
         isAdmin = b;
     }
+
+    //Henter brukernavnet til userID(email)
     public static String getUsername() throws SQLException {
         String queryString = "select * from User where Email='"+userID+"'";
         ResultSet rs = queryGenerator.query(queryString);
         rs.next();
         return rs.getString("Username");
     }
+    //Henter navnet til course
     public static String getCourseName() throws SQLException {
         if(courseID==null)
             return "";
@@ -69,6 +73,7 @@ public abstract class Session {
         rs.next();
         return rs.getString("name");
     }
+    //Henter navnet til folder
     private static String getFolderName(int folderID) throws SQLException {
         if(folderID==0)
             return "";
@@ -77,6 +82,7 @@ public abstract class Session {
         rs.next();
         return rs.getString("Name");
     }
+    //Returnerer en string med pathen til mappen programmet befinner seg i. F.eks. Oppgaver/Kapittel1/Løsningsforslag
     public static String getFolderPath() throws SQLException {
         int currFolderID = folderID;
         if(currFolderID==0)
@@ -93,18 +99,20 @@ public abstract class Session {
             currFolderID = parentID;
         }
     }
-
+    //Returner en string med term for course programmet befinner seg i
     public static String getTermString(){
         if(term==null)
             return "";
         return term;
     }
+    //Det samme som over bare med CourseID
     public static String getCourseIDString(){
         if(courseID==null)
             return "";
         return courseID;
     }
 
+    //Returnerer en string som beskriver hele programmets state, dette displayes på toppen av skjermen
     public static String ToString(){
         try {
             String s = getUsername();

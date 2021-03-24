@@ -10,6 +10,7 @@ public class DBConn {
         connect();
     }
 
+    //Oppretter en connection til databasen
     public void connect() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();

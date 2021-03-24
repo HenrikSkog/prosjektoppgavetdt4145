@@ -10,6 +10,7 @@ import org.dbprosjekt.database.Session;
 import java.io.IOException;
 import java.sql.SQLException;
 
+//Kontrollerer oppretting av et nytt Course
 public class CourseController {
     @FXML
     private Text path;
@@ -24,6 +25,7 @@ public class CourseController {
     @FXML
     private Spinner<Integer> semYear;
 
+    //Oppretter et nytt course dersom det ikke allerede eksisterer og IDen allerede finnes i Subject i databasen
     public void createCourse() throws IOException, SQLException {
         String id = courseIDInput.getText();
         String sem = ((RadioButton)semester.getSelectedToggle()).getText();
@@ -46,10 +48,12 @@ public class CourseController {
         }
     }
     @FXML
+    //Endrer scene til hovedvinduet
     private void goBack(ActionEvent actionEvent) throws SQLException {
         Program2Controller.reload();
     }
     @FXML
+    //Setter staten til progreammet på toppen av vinduet
     public void initialize(){
         path.setText(Session.ToString());
     }

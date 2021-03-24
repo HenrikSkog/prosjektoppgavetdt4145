@@ -18,6 +18,7 @@ public class App extends Application {
     private static Scene scene;
 
     @Override
+    //Starter programmet ved å sette scenen til å være login-skjermen
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("login"), 800, 1080);
         stage.setScene(scene);
@@ -25,13 +26,16 @@ public class App extends Application {
         stage.show();
     }
 
+    //Endrer root til en annen FXML-fil
     public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
+    //Endrer root til en JavaFX-node
     public static void setRoot(Parent p){
         scene.setRoot(p);
     }
 
+    //Laster inn FXML-filene
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("fxml/" + fxml + ".fxml"));
         return fxmlLoader.load();

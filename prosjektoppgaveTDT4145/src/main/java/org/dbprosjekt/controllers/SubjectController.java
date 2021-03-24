@@ -10,6 +10,7 @@ import org.dbprosjekt.database.Session;
 import java.io.IOException;
 import java.sql.SQLException;
 
+//Kontrollerer opprtting av et nytt Subject
 public class SubjectController {
     @FXML
     private Text path;
@@ -20,6 +21,7 @@ public class SubjectController {
     @FXML
     private Text errorMessage;
     @FXML
+    //Inserter et nytt Subject, dersom det ikke finnes fra før
     public void createSubject() throws IOException, SQLException {
         String id = subjectIdInput.getText();
         String name = subjectNameInput.getText();
@@ -34,10 +36,12 @@ public class SubjectController {
         }
     }
     @FXML
+    //Endrer scene til "hovedvinduet"
     private void goBack(ActionEvent actionEvent) throws SQLException {
         Program2Controller.reload();
     }
     @FXML
+    //Setter staten til progreammet på toppen av vinduet
     public void initialize(){
         path.setText(Session.ToString());
     }
