@@ -19,9 +19,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
+//Kontrollerer søk etter nøkkelord
 public class SearchController {
     private static VBox root;
     private static DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
+    //Finner alle threads som inneholder ett av søkeordene og displayer disse i guien
     public static void initialize(String input) throws SQLException {
         String[] keyWords = input.split(" ");
         HashSet<Integer> postIDs = new HashSet<>();

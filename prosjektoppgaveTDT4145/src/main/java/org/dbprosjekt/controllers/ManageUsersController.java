@@ -10,6 +10,7 @@ import org.dbprosjekt.database.Session;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+//Kontrollerer promotering av brukere til instructor, samt adding og removing av brukerer til et course
 public class ManageUsersController {
     @FXML
     private Text path;
@@ -27,6 +28,7 @@ public class ManageUsersController {
     private Text removeMessage;
 
     @FXML
+    //Promoterer en bruker dersom den finnes og ikke allerede er instructor
     private void promoteUser(ActionEvent actionEvent) throws SQLException {
         String email = promoteEmail.getText();
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
@@ -45,6 +47,7 @@ public class ManageUsersController {
         promoteMessage.setText("User successfully promoted");
     }
     @FXML
+    //Legger en bruker til i et course dersom den finnes og ikke allerede er i courset
     private void addToCourse(ActionEvent actionEvent) throws SQLException {
         String email = addEmail.getText();
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
@@ -62,6 +65,7 @@ public class ManageUsersController {
         addMessage.setText("User successfully added");
     }
     @FXML
+    //Fjerner en bruker fra et course dersom brukeren finnes og er med i courset.
     private void removeFromCourse(ActionEvent actionEvent) throws SQLException {
         String email = removeEmail.getText();
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
@@ -79,10 +83,12 @@ public class ManageUsersController {
         removeMessage.setText("User successfully removed");
     }
     @FXML
+    //Går tilbake til hovedvinduet
     private void goBack(ActionEvent actionEvent) throws SQLException {
         Program2Controller.reload();
     }
     @FXML
+    //Setter staten til progreammet på toppen av vinduet
     public void initialize(){
         path.setText(Session.ToString());
     }

@@ -1,5 +1,5 @@
 package org.dbprosjekt;
-
+//Denne klassen benyttes kun for å fylle nedtrekksmenyen der man kan velge mellom courses
 public class Course {
     String name;
     String term;

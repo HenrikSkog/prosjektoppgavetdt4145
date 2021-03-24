@@ -11,7 +11,7 @@ import org.dbprosjekt.database.DatabaseQueryGenerator;
 import org.dbprosjekt.database.Session;
 
 import java.sql.SQLException;
-
+//Kontrollerer oppretting av nye replies
 public class ReplyController {
     @FXML
     private Button back;
@@ -27,6 +27,7 @@ public class ReplyController {
     private Text errorText;
 
     @FXML
+    //Oppretter en ny reply på den posten bruker trykket reply på
     private void postReply(ActionEvent actionEvent) throws SQLException {
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
 
@@ -51,10 +52,12 @@ public class ReplyController {
         Program2Controller.reload();
     }
     @FXML
+    //Går tilbake til hovedvinduet
     private void goBack(ActionEvent actionEvent) throws SQLException {
         Program2Controller.reload();
     }
     @FXML
+    //Sjekker og setter mulighet for anonyme posts
     public void initialize() throws SQLException {
         var queryGenerator = new DatabaseQueryGenerator();
         boolean allowsAnon = queryGenerator.currentCourseAllowsAnonymous();

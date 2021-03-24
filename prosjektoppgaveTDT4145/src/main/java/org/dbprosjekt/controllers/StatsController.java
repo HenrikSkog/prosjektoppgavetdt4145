@@ -12,6 +12,7 @@ import org.dbprosjekt.database.DatabaseQueryGenerator;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+//Kontrollerer fremvinsing og innhenting av statistikk.
 public class StatsController {
 
 	//TODO change email to username in stats
@@ -26,11 +27,13 @@ public class StatsController {
 	Text activeUsersText;
 
 	@FXML
+	//går tilbake til hovedvinduet
 	public void back() throws SQLException {
 		Program2Controller.reload();
 	}
 
 	@FXML
+	//Innhenter aktuelle data og oppretter tabeller
 	public void initialize() throws SQLException {
 		//about users
 		//how many posts users have created and viewed in total
@@ -97,7 +100,7 @@ public class StatsController {
 		threadtable.getColumns().addAll(title, viewedTimes, commentedTimes);
 
 	}
-
+	//representerer en rad i tabellen som viser data og brukere
 	public class UserRow {
 		SimpleStringProperty username;
 		SimpleStringProperty postsViewed;
@@ -136,6 +139,7 @@ public class StatsController {
 		}
 	}
 
+		//representerer en rad i tabellen som viser data om threads
 		public class ThreadRow {
 		SimpleStringProperty title;
 		SimpleStringProperty viewedTimes;

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+//Kontrollerer innlogging og registrering
 public class LoginController {
     @FXML
     private TextField emailTextInput;
@@ -37,6 +38,7 @@ public class LoginController {
     private Text regErrorText;
 
     @FXML
+    //Logger inn dersom brukernavn og passord matcher en rad i user oppdaterer samtidig Session med email og isAdmin, for så å initialize hovedvinduet
     private void signIn() throws IOException, SQLException {
         String email = emailTextInput.getText();
         String password = passwordTextInput.getText();
@@ -65,6 +67,7 @@ public class LoginController {
     }
 
     @FXML
+    //Registerer en ny bruker dersom hverken epost eller brukernavn er i bruk, oppdaterer session og intializer
     private void register() throws IOException, SQLException {
         boolean emailInUse = false;
         boolean usernameInUse = false;
