@@ -32,7 +32,7 @@ public class NewPostController {
 
 		var selectedTag = tags.getValue().toString();
 
-		if(selectedTag.equals("No tag"))
+		if (selectedTag.equals("No tag"))
 			selectedTag = null;
 
 		queryGenerator.insertThreadPost(titleInput.getText(), textInput.getText(), selectedTag, anonymousBox.isSelected());
@@ -58,7 +58,7 @@ public class NewPostController {
 		tags.setItems(
 			FXCollections.observableArrayList(
 				"No tag", "Question", "Homework ", "Homework solution", "Lectures notes", "General announcement"
-		));
+			));
 
 	}
 }

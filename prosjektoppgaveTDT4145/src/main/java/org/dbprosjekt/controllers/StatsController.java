@@ -102,6 +102,7 @@ public class StatsController {
 		threadtable.getColumns().addAll(title, viewedTimes, commentedTimes);
 
 	}
+
 	//representerer en rad i tabellen som viser data og brukere
 	public class UserRow {
 		SimpleStringProperty username;
@@ -141,8 +142,8 @@ public class StatsController {
 		}
 	}
 
-		//representerer en rad i tabellen som viser data om threads
-		public class ThreadRow {
+	//representerer en rad i tabellen som viser data om threads
+	public class ThreadRow {
 		SimpleStringProperty title;
 		SimpleIntegerProperty viewedTimes;
 		SimpleIntegerProperty commentedTimes;
@@ -179,7 +180,6 @@ public class StatsController {
 			this.commentedTimes.set(commentedTimes);
 		}
 	}
-
 
 
 }

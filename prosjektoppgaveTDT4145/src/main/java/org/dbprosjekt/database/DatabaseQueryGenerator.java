@@ -16,7 +16,7 @@ public class DatabaseQueryGenerator extends DBConn {
 
 	//Tar inn en query, sender denne til databasen og returnerer resultatet
 	public ResultSet query(String queryString) {
-		try  {
+		try {
 			Statement statement = conn.createStatement();
 			return statement.executeQuery(queryString);
 		} catch (Exception e) {
