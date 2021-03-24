@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -286,6 +288,9 @@ public class Program2Controller {
             String authorType = rs.getString("Type");
             Text text1 = new Text(text);
             Text text2 = new Text(title);
+            text1.setWrappingWidth(400);
+            text2.setWrappingWidth(400);
+
             text2.setStyle("-fx-font-size: 20");
             Text tag1 = new Text("#"+tag);
             Text pID = new Text("ID: "+postID);
@@ -337,6 +342,7 @@ public class Program2Controller {
             String authorType = rs.getString("Type");
             Text pID = new Text("ID: "+postID);
             Text text1 = new Text(text);
+            text1.setWrappingWidth(400);
             Text dAndT = new Text("Posted: "+date+" "+time);
             Text userName = new Text("By: Anonymous user");
             if (!isAnonymous)
@@ -365,14 +371,22 @@ public class Program2Controller {
 
             var linkedPostID = queryGenerator.getLinkedPost(Integer.toString(postID));
 
+            var postVBox = new VBox();
+
             if(linkedPostID == null) {
-                nodes.add(new VBox(top, text1, bottom, new Text(" "), new HBox(new Text(space((depth)*10)), new VBox(nodeListToArray(replies(postID, depth+1))))));
+                postVBox.getChildren().addAll(top, text1, bottom, new Text(" "), new HBox(new Text(space((depth)*10)), new VBox(nodeListToArray(replies(postID, depth+1)))));
             } else {
+                Text linkText = new Text("This link has a link to thread with id: " + linkedPostID);
+                linkText.setStyle("-fx-font-style: italic");
+
                 Button linkBtn = new Button("Go to linked thread");
                 addLinkHandling(linkBtn, Integer.parseInt(linkedPostID));
-                VBox box = new VBox(linkBtn, bottom);
-                nodes.add(new VBox(top, text1, box, new Text(" "), new HBox(new Text(space((depth)*10)), new VBox(nodeListToArray(replies(postID, depth+1))))));
+                VBox box = new VBox(linkText, linkBtn, bottom);
+
+                postVBox.getChildren().addAll(top, text1, box, new Text(" "), new HBox(new Text(space((depth)*10)), new VBox(nodeListToArray(replies(postID, depth+1)))));
+
             }
+                nodes.add(postVBox);
 
 
         }
