@@ -1,5 +1,6 @@
 package org.dbprosjekt.database;
 
+import javafx.geometry.Pos;
 import org.dbprosjekt.controllers.Program2Controller;
 
 import java.sql.ResultSet;
@@ -69,7 +70,7 @@ public class DatabaseQueryGenerator extends DBConn {
 
 	//Queryer databasen og finner antall brukerere som har vært aktive i dag
 	public String getDailyActiveUsers() {
-		String queryString = "select count(*) as num from UserViewedThread u where date(u.date) = date(curdate())";
+		String queryString = "select count(distinct Email) as num from UserViewedThread u where date(u.date) = date(curdate())";
 		var rs = query(queryString);
 		var data = getSelectResult(rs, "num");
 
@@ -80,6 +81,7 @@ public class DatabaseQueryGenerator extends DBConn {
 		return data.get(0).get(0);
 	}
 
+	public ArrayList<ArrayList<String>> getTotalUserStats() throws SQLException {
 	//Returnerer en tabell med email, antall posts brukeren med denne emailen har sett og antallet vedkommende har opprettet
 	public ArrayList<ArrayList<String>> getTotalUserStats() {
 		String queryString = "SELECT q1.Email, viewedPosts, createdPosts FROM (select User.email as Email, count(U.Email) as viewedPosts from User left outer join UserViewedThread U on User.Email = U.Email group by User.Email) q1 left outer join (select Author as Email, count(*) as createdPosts from Post group by Author) q2 on q1.Email = q2.Email order by viewedPosts desc;";
@@ -87,8 +89,19 @@ public class DatabaseQueryGenerator extends DBConn {
 		var rs = query(queryString);
 		var data = getSelectResult(rs, "Email", "viewedPosts", "createdPosts");
 
-//		removing nulls from result
+		//getting usernames
+		var usersRS = query("select username, email from User");
+		var users = new HashMap<String, String>();
+		while(usersRS.next()) {
+			String username = usersRS.getString("username");
+			String email = usersRS.getString("email");
+			users.put(email, username);
+		}
+
+
+//		removing nulls from result and switching emails with usernames
 		for (int i = 0; i < data.size(); i++) {
+			data.get(i).set(0, users.get(data.get(i).get(0)));
 			for (int j = 0; j < data.get(i).size(); j++) {
 				if(data.get(i).get(j) == null)
 					data.get(i).set(j, "0");
@@ -100,11 +113,15 @@ public class DatabaseQueryGenerator extends DBConn {
 
 	//Returnerer en tabell med id tittel antall views og antall replies for hver thread
 	public ArrayList<ArrayList<String>> getActiveThreads() throws SQLException {
+		//get views on posts
 		String queryString = "select TP.PostID, TP.Title, count(*) as num from ThreadPost TP join UserViewedThread UVT on TP.PostID = UVT.PostID group by TP.PostID;";
-
 		var rs = query(queryString);
+		var data = getSelectResult(rs, "PostID", "Title", "num");
+		return data;
+	}
 
-		queryString = "select * from ThreadPost as TP inner join Post as P on TP.PostID = P.PostID";
+	public HashMap<Integer, Integer> getMostRepliedToThreads() throws SQLException {
+		String queryString = "select * from ThreadPost as TP inner join Post as P on TP.PostID = P.PostID";
 		ResultSet rs2 = query(queryString);
 		HashMap<Integer, Integer> repliesToPost = new HashMap<>();
 		while (rs2.next()){
@@ -112,9 +129,7 @@ public class DatabaseQueryGenerator extends DBConn {
 			System.out.println(rs2.getInt("P.PostID")+", "+replies);
 			repliesToPost.put(rs2.getInt("P.PostID"), replies);
 		}
-		var data = getSelectResult(rs, "PostID", "Title", "num");
-
-		return data;
+		return repliesToPost;
 	}
 
 	//Returnerer antall posts i en gitt thread
@@ -182,6 +197,17 @@ public class DatabaseQueryGenerator extends DBConn {
 		return false;
 	}
 
+	public boolean threadPostExists(String postID) {
+		try {
+			var returnVal = queryHasResultRows("select PostID from ThreadPost where PostID="+postID);
+			return returnVal;
+		} catch(Exception e) {
+			System.out.println("Exception in thread post exists");
+			System.out.println(e.getMessage());
+		}
+		return true;
+	}
+
 	//Returnerer IDen til raden som sist ble innsatt i databasen, dette benyttes f.eks. ved oppretting av nye posts der flere tabeller i databasen må oppdateres
 	public String getLastInsertedID() {
 		try {
@@ -201,6 +227,24 @@ public class DatabaseQueryGenerator extends DBConn {
 	}
 
 	//Returnerer en insert-statement med gitte verdier
+	public String getLinkedPost(String PostID) {
+		try {
+			String queryString = "select LinkID from PostLink where PostID=" + PostID;
+			var rs = query(queryString);
+			var data = getSelectResult(rs, "LinkID");
+			System.out.println(queryString);
+			System.out.println("DATA: " + data);
+			try {
+				return data.get(0).get(0);
+			} catch(IndexOutOfBoundsException e) {
+				return null;
+			}
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
 	public String buildInsert(String table, String... values) {
 		String start = "insert into " + table + " values(";
 		for(String val: Arrays.asList(values)) {
@@ -253,6 +297,16 @@ public class DatabaseQueryGenerator extends DBConn {
 		} catch (Exception e) {
 			System.out.println("exception in post insert");
 			System.out.println(e.getMessage());
+		}
+	}
+
+	public void insertPostLink(String fromPostID, String toPostID) {
+		try {
+			Statement statement = conn.createStatement();
+			String queryString = buildInsert("PostLink", fromPostID, toPostID);
+			statement.execute(queryString);
+		} catch (Exception e) {
+			System.out.println(e);
 		}
 	}
 
