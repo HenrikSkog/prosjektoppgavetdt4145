@@ -395,8 +395,8 @@ public class ProgramController {
 	}
 
 	// Åpner et modal-vindu med en thread, brukes i forbindelse med linker i replies til threads
-	private static void openLinkedThreadInModal(int linkedPostID, ActionEvent event) throws SQLException {
-		String queryString = "select * from ThreadPost as TP inner join ThreadInFolder as TIF on TP.PostID=TIF.PostID inner join Post as P on P.PostID=TP.PostID inner join User on P.Author=User.Email where TP.PostID=" + linkedPostID;
+	private static void openThreadInModal(int postID, ActionEvent event) throws SQLException {
+		String queryString = "select * from ThreadPost as TP inner join ThreadInFolder as TIF on TP.PostID=TIF.PostID inner join Post as P on P.PostID=TP.PostID inner join User on P.Author=User.Email where TP.PostID=" + postID;
 		ResultSet rs = queryGenerator.query(queryString);
 
 		var nodes = postsFromResultSet(rs);
@@ -489,7 +489,7 @@ public class ProgramController {
 	private static void addLinkHandling(Button btn, int linkedPostID) {
 		btn.setOnAction(event -> {
 			try {
-				openLinkedThreadInModal(linkedPostID, event);
+				openThreadInModal(linkedPostID, event);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
