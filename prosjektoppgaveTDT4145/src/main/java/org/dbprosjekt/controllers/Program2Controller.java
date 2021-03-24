@@ -1,7 +1,6 @@
 package org.dbprosjekt.controllers;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -31,7 +30,6 @@ public class Program2Controller {
     private static DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
     //Oppretter guien i hovedvinduet og legger til funksjonalitet på elementer
     public static void initialize() throws SQLException {
-        System.out.println("init");
         errorMessage = new Text();
 
         ComboBox<Course> dropDown = new ComboBox<>();
@@ -175,7 +173,7 @@ public class Program2Controller {
     private static void fillDropDown(ComboBox<Course> combo) throws SQLException {
         String queryString = "select Subject.SubjectID, Course.Term, Subject.name from Course inner join Subject on Course.SubjectID = Subject.SubjectID inner join InCourse on Subject.SubjectID = InCourse.SubjectID and Course.Term = InCourse.Term inner join User on InCourse.Email = User.Email where User.Email='"+Session.getUserID()+"'";
         ResultSet rs = queryGenerator.query(queryString);
-        ArrayList<Course> courses = new ArrayList<Course>();
+        ArrayList<Course> courses = new ArrayList<>();
         while(rs.next()){
             String id = rs.getString("SubjectID");
             String term = rs.getString("Term");
@@ -230,14 +228,11 @@ public class Program2Controller {
             Button folder = new Button(rs.getString("Name")+"  "+"ID: "+folderID);
             if(folderID!=0 && folderID==Session.getCurrentFolderID())
                 goToFolder(folderID, folder);
-            folder.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    try {
-                        goToFolder(folderID, folder);
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
-                    }
+            folder.setOnAction(actionEvent -> {
+                try {
+                    goToFolder(folderID, folder);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
                 }
             });
             VBox sub = new VBox(nodeListToArray(subFolders(folderID, 1)));
@@ -263,16 +258,13 @@ public class Program2Controller {
             return nodes;
         while(rs.next()){
             int postID = rs.getInt("P.PostID");
-            System.out.println(postID);
             String tag = rs.getString("Tag");
             String text = rs.getString("Text");
             String title = rs.getString("Title");
             String date = rs.getString("Date");
             String time = rs.getString("Time");
             boolean isAnonymous = rs.getBoolean("IsAnonymous");
-            String authorEmail = rs.getString("Email");
             String authorUsername = rs.getString("Username");
-            String authorType = rs.getString("Type");
             Text text1 = new Text(text);
             Text text2 = new Text(title);
             text1.setWrappingWidth(400);
@@ -285,7 +277,6 @@ public class Program2Controller {
             Text userName = new Text("By: Anonymous user");
             if (!isAnonymous)
                 userName.setText("By: "+authorUsername);
-            Text type = new Text(authorType);
             HBox top = new HBox(20);
             top.getChildren().addAll(dAndT, userName, tag1, pID);
             HBox bottom = new HBox(20);
@@ -325,9 +316,7 @@ public class Program2Controller {
             String date = rs.getString("Date");
             String time = rs.getString("Time");
             boolean isAnonymous = rs.getBoolean("IsAnonymous");
-            String authorEmail = rs.getString("Email");
             String authorUsername = rs.getString("Username");
-            String authorType = rs.getString("Type");
             Text pID = new Text("ID: "+postID);
             Text text1 = new Text(text);
             text1.setWrappingWidth(400);
@@ -335,7 +324,6 @@ public class Program2Controller {
             Text userName = new Text("By: Anonymous user");
             if (!isAnonymous)
                 userName.setText("By: "+authorUsername);
-            Text type = new Text(authorType);
             HBox top = new HBox(20);
             top.getChildren().addAll(dAndT, userName, pID);
             HBox bottom = new HBox(20);
@@ -463,14 +451,12 @@ public class Program2Controller {
 
     //Oppdaterer guien med posts
     private static void updatePots() throws SQLException {
-        System.out.println("updatePosts");
         rightVBox.getChildren().clear();
         rightVBox.getChildren().addAll(nodeListToArray(fillPosts()));
     }
     //Legger til funksjonalitet på like-knappene
     private static void addLikeHandling(Button like, int postID){
         like.setOnAction(actionEvent -> {
-            System.out.println("removing");
             try {
                 queryGenerator.removeLike(Session.getUserID(), postID);
                 updatePots();
@@ -482,7 +468,6 @@ public class Program2Controller {
     //Legger til funksjonalitet på liked-knappene
     private static void addUnlikeHandling(Button like, int postID){
         like.setOnAction(actionEvent -> {
-            System.out.println("adding");
             try {
                 queryGenerator.insertLike(Session.getUserID(), postID);
                 updatePots();

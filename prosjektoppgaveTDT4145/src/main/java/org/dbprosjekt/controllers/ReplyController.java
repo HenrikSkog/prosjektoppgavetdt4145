@@ -47,7 +47,7 @@ public class ReplyController {
 
         if(!linkInput.getText().equals("")) {
             String replyid = queryGenerator.getLastInsertedID();
-            queryGenerator.insertPostLink(replyid, linkInput.getText());
+            queryGenerator.insertPostLink(Integer.parseInt(replyid), Integer.parseInt(linkInput.getText()));
         }
         Program2Controller.reload();
     }

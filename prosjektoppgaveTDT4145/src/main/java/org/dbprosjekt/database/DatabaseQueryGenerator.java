@@ -1,9 +1,6 @@
 package org.dbprosjekt.database;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,8 +16,7 @@ public class DatabaseQueryGenerator extends DBConn {
 
 	//Tar inn en query, sender denne til databasen og returnerer resultatet
 	public ResultSet query(String queryString) {
-		try {
-			Statement statement = conn.createStatement();
+		try (Statement statement = conn.createStatement()) {
 			return statement.executeQuery(queryString);
 		} catch (Exception e) {
 			System.out.println("exception in query method with string " + queryString);
@@ -47,6 +43,11 @@ public class DatabaseQueryGenerator extends DBConn {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		try {
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return res;
 	}
 
@@ -58,6 +59,11 @@ public class DatabaseQueryGenerator extends DBConn {
 		try {
 			if (rs.isBeforeFirst()) {
 				return true;
+			}
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 			return false;
 		} catch (Exception e) {
@@ -122,7 +128,6 @@ public class DatabaseQueryGenerator extends DBConn {
 		HashMap<Integer, Integer> repliesToPost = new HashMap<>();
 		while (rs2.next()) {
 			int replies = getThreadSize(rs2.getInt("P.PostID"), 1) - 1;
-			System.out.println(rs2.getInt("P.PostID") + ", " + replies);
 			repliesToPost.put(rs2.getInt("P.PostID"), replies);
 		}
 		return repliesToPost;
@@ -142,12 +147,12 @@ public class DatabaseQueryGenerator extends DBConn {
 	}
 
 	//Returnerer IDen til  alle threadposts i en gitt folder
-	private ArrayList<String> getPostIDsInFolder(String FolderID) {
+	private ArrayList<Integer> getPostIDsInFolder(String FolderID) {
 		try {
 			var rs = query("select ThreadPost.PostID from ThreadPost join ThreadInFolder TIF on ThreadPost.PostID = TIF.PostID where TIF.FolderID=" + FolderID);
 			var data = getSelectResult(rs, "PostID");
 
-			var onlyIds = (ArrayList<String>) data.stream().map(row -> row.get(0)).collect(Collectors.toList());
+			var onlyIds = (ArrayList<Integer>) data.stream().map(row -> Integer.parseInt(row.get(0))).collect(Collectors.toList());
 
 			return onlyIds;
 		} catch (Exception e) {
@@ -159,18 +164,18 @@ public class DatabaseQueryGenerator extends DBConn {
 
 	//Inserter i UserViewedThread for alle threads i en gitt folder
 	public void insertThreadPostsViewedByUser(String FolderID) {
-		try {
+		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("UserViewedThread", "Email", "CURDATE()", "CURTIME()", "PostID"));) {
 			var ids = getPostIDsInFolder(FolderID);
-			var userID = Session.getUserID();
-			Statement statement = conn.createStatement();
-			for (String id : ids) {
-				String query = buildInsert("UserViewedThread", userID, "CURDATE()", "CURTIME()", id);
-				statement.execute(query);
-			}
+			var email = Session.getUserID();
 
-		} catch (Exception e) {
+			for (int id : ids) {
+				ps.setString(1, email);
+				ps.setInt(2, id);
+				ps.executeUpdate();
+			}
+		} catch (SQLException e) {
 			System.out.println("exception in inserting threadposts viewed by user");
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 	}
@@ -229,8 +234,6 @@ public class DatabaseQueryGenerator extends DBConn {
 			String queryString = "select LinkID from PostLink where PostID=" + PostID;
 			var rs = query(queryString);
 			var data = getSelectResult(rs, "LinkID");
-			System.out.println(queryString);
-			System.out.println("DATA: " + data);
 			try {
 				return data.get(0).get(0);
 			} catch (IndexOutOfBoundsException e) {
@@ -242,196 +245,206 @@ public class DatabaseQueryGenerator extends DBConn {
 		return null;
 	}
 
-	//Returnerer en insert-statement med gitte verdier
-	public String buildInsert(String table, String... values) {
-		String start = "insert into " + table + " values(";
-		for (String val : Arrays.asList(values)) {
-			if (val == null) {
-				start += "null,";
-			} else if (val.toUpperCase() == "CURDATE()" || val.toUpperCase() == "CURTIME()" || val.matches("-?\\d+(\\.\\d+)?")) {
-				start += val + ",";
-			} else {
-				start += "'" + val + "',";
-			}
-		}
-		;
-		start = start.substring(0, start.length() - 1) + ")";
-		return start;
-	}
-
-	private String buildPreparedInsertSql(String table, String... values) {
+	private String buildInsertQuery(String table, String... values) {
 		String start = "insert into " + table + " (";
 		for (String val : Arrays.asList(values)) {
-			start += val + ",";
+			if (val.equals("CURTIME()")) {
+				start += "Time,";
+			} else if (val.equals("CURDATE()")) {
+				start += "Date,";
+			} else {
+				start += val + ",";
+			}
 		}
-		;
 		start = start.substring(0, start.length() - 1) + ") VALUES(";
 		for (int i = 0; i < values.length; i++) {
-			start += "?,";
+			if (values[i].equals("CURTIME()")) {
+				start += "CURTIME(),";
+			} else if (values[i].equals("CURDATE()")) {
+				start += "CURDATE(),";
+			} else {
+				start += "?,";
+			}
 		}
 		return start.substring(0, start.length() - 1) + ")";
 	}
 
-	public void insert(String sql, String... values)  {
-		PreparedStatement statement = null;
-		try {
-		statement = conn.prepareStatement(sql);
-			for (int i = 0; i < values.length; i++) {
-				statement.setObject(i + 1, values[i]);
-			}
-			statement.executeUpdate();
-
-		} catch (Exception e) {
-			System.out.println("Exception in insert method");
-			System.out.println(e.getMessage());
-		} finally {
-			try {
-				statement.close();
-			} catch (SQLException throwables) {
-				throwables.printStackTrace();
-			}
-		}
-	}
-
 	//Inserter en bruker i databasen
 	public void insertUser(String email, String username, String password) {
-		try {
-			Statement statement = conn.createStatement();
-			String queryString = "insert into User(Email, Username, Password, Type) values('" + email + "','" + username + "','" + password + "','student')";
-			statement.execute(queryString);
-		} catch (Exception e) {
-			System.out.println(e);
+		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("User", "Email", "Username", "Password", "Type"))) {
+			ps.setString(1, email);
+			ps.setString(2, username);
+			ps.setString(3, password);
+			ps.setString(4, "student");
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
 	//Inserter en Threadpost i databasen
-	public void insertThreadPost(String title, String text, String tag, int isAnonymous) {
-		try {
-			var statement = conn.createStatement();
+	public void insertThreadPost(String title, String text, String tag, boolean isAnonymous) {
+		//insert post
+		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("Post", "Text", "CURDATE()", "CURTIME()", "isAnonymous", "Author"))) {
+			ps.setString(1, text);
+			ps.setBoolean(2, isAnonymous);
+			ps.setString(3, Session.getUserID());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		//get row id
+		String id = getLastInsertedID();
 
-//            insert post row
-			String insertPostQueryString = buildInsert("Post", null, text, "CURDATE()", "CURTIME()", Integer.toString(isAnonymous), Session.getUserID());
-			statement.execute(insertPostQueryString);
+		//insert thread post
+		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("ThreadPost", "PostID", "Tag", "Title"))) {
+			ps.setString(1, id);
+			ps.setString(2, tag);
+			ps.setString(3, title);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-//            get row id
-			String id = getLastInsertedID();
-
-//            insert thread post
-			String insertThreadPostQueryString = buildInsert("ThreadPost", id, tag, title);
-			statement.execute(insertThreadPostQueryString);
-
-
-//            insert thread in folder
-			String insertThreadInFolderQueryString = buildInsert("ThreadInFolder", Integer.toString(Session.getCurrentFolderID()), id);
-
-
-			statement.execute(insertThreadInFolderQueryString);
-
-		} catch (Exception e) {
-			System.out.println("exception in post insert");
-			System.out.println(e.getMessage());
+		//insert thread in folder
+		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("ThreadInFolder", "FolderID", "PostID"))) {
+			ps.setInt(1, Session.getCurrentFolderID());
+			ps.setInt(2, Integer.parseInt(id));
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
 	//Inserter en relasjon mellom to posts der den ene linker til den andre
-	public void insertPostLink(String fromPostID, String toPostID) {
-		try {
-			Statement statement = conn.createStatement();
-			String queryString = buildInsert("PostLink", fromPostID, toPostID);
-			statement.execute(queryString);
-		} catch (Exception e) {
-			System.out.println(e);
+	public void insertPostLink(int fromPostID, int toPostID) {
+		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("PostLink", "PostID", "LinkID"))) {
+			ps.setInt(1, fromPostID);
+			ps.setInt(2, toPostID);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
 
 	//Inserter et subject i databasen
 	public void insertSubject(String id, String name) {
-		try {
-			Statement statement = conn.createStatement();
-			String queryString = "insert into Subject(SubjectID, name ) values('" + id + "','" + name + "')";
-			statement.execute(queryString);
-		} catch (Exception e) {
-			System.out.println(e);
+		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("Subject", "SubjectID", "name"))) {
+			ps.setString(1, id);
+			ps.setString(2, name);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
 	//Inserter et nytt course
 	public void insertCourse(String id, String term, boolean allowsAnonymous) {
-		try {
-			Statement statement = conn.createStatement();
-			String queryString = "insert into Course(SubjectID, Term, AllowsAnonymous) values('" + id + "','" + term + "'," + allowsAnonymous + ")";
-			statement.execute(queryString);
-		} catch (Exception e) {
-			System.out.println(e);
+		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("Course", "SubjectID", "Term", "AllowsAnonymous"))) {
+			ps.setString(1, id);
+			ps.setString(2, term);
+			ps.setBoolean(3, allowsAnonymous);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
 	//Inserter en ny folder
 	public void insertFolder(String name) {
-		String queryString = "";
-		try {
-			String term = Session.getTerm();
-			String courseID = Session.getCourseID();
-			Statement statement = conn.createStatement();
+		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("Folder", "Name", "ParentID", "SubjectID", "Term"))) {
+			ps.setString(1, name);
 			if (Session.getCurrentFolderID() == 0) {
-				queryString = "insert into Folder(FolderID,Name,ParentID,SubjectID,Term) values(null,'" + name + "',null,'" + courseID + "','" + term + "')";
+				ps.setNull(2, Types.NULL);
+				ps.setString(3, Session.getCourseID());
+				ps.setString(4, Session.getTerm());
 			} else {
-				queryString = "insert into Folder(FolderID,Name,ParentID,SubjectID,Term) values(null,'" + name + "','" + Session.getCurrentFolderID() + "',null,null)";
+				ps.setInt(2, Session.getCurrentFolderID());
+				ps.setNull(3, Types.NULL);
+				ps.setNull(4, Types.NULL);
 			}
-			statement.execute(queryString);
-		} catch (Exception e) {
-			System.out.println(e);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
 	//Inserter en ny relasjon mellom user og course
-	public void insertInCourse(String email, String courseID, String term) throws SQLException {
-		String queryString = "insert into InCourse (Email, SubjectID, Term) VALUES ('" + email + "','" + courseID + "','" + term + "')";
-		Statement statement = conn.createStatement();
-		statement.execute(queryString);
+	public void insertInCourse(String email, String courseID, String term) {
+		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("InCourse", "Email", "SubjectID", "Term"))) {
+			ps.setString(1, email);
+			ps.setString(2, courseID);
+			ps.setString(3, term);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	//Endrer type for en bruker fra student til instructor
-	public void promoteUser(String email) throws SQLException {
-		String queryString = "update User set Type='instructor' where Email='" + email + "'";
-		Statement statement = conn.createStatement();
-		statement.execute(queryString);
+	public void promoteUser(String email) {
+		try (PreparedStatement ps = conn.prepareStatement("update User set Type='instructor' where Email=?")) {
+			ps.setString(1, email);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	//Fjerner en relasjon mellom en bruker og et course
-	public void removeInCourse(String email) throws SQLException {
-		String queryString = "delete from InCourse where Email='" + email + "' and SubjectID='" + Session.getCourseID() + "' and Term='" + Session.getTerm() + "'";
-		Statement statement = conn.createStatement();
-		statement.execute(queryString);
+	public void removeInCourse(String email) {
+		try (PreparedStatement ps = conn.prepareStatement("delete from InCourse where Email=? and SubjectID=? and Term=?")) {
+			ps.setString(1, email);
+			ps.setString(2, Session.getCourseID());
+			ps.setString(3, Session.getTerm());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	//Sletter en mappe
-	public void removeFolder(int folderID) throws SQLException {
-		String queryString = "delete from Folder where FolderID='" + folderID + "'";
-		Statement statement = conn.createStatement();
-		statement.execute(queryString);
+	public void removeFolder(int folderID) {
+		try (PreparedStatement ps = conn.prepareStatement("delete from Folder where FolderID=?")) {
+			ps.setInt(1, folderID);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	//Endrer navnet til en mappe
-	public void renameFolder(int folderID, String name) throws SQLException {
-		String queryString = "update Folder set Name='" + name + "' where FolderID='" + folderID + "'";
-		Statement statement = conn.createStatement();
-		statement.execute(queryString);
+	public void renameFolder(int folderID, String name) {
+		try (PreparedStatement ps = conn.prepareStatement("update Folder set Name=? where FolderID=?")) {
+			ps.setString(1, name);
+			ps.setInt(2, folderID);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	//Fjerner en Like-relasjon mellom en bruker og en post
-	public void removeLike(String email, int postID) throws SQLException {
-		String queryString = "delete from UserLikedPost as ULP where ULP.Email='" + email + "' and ULP.PostID='" + postID + "'";
-		Statement statement = conn.createStatement();
-		statement.execute(queryString);
+	public void removeLike(String email, int postID) {
+		try (PreparedStatement ps = conn.prepareStatement("delete from UserLikedPost as ULP where ULP.Email=? and ULP.PostID=?")) {
+			ps.setString(1, email);
+			ps.setInt(2, postID);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	//Inserter en like-relasjon mellom en bruker og en post
 	public void insertLike(String email, int postID) throws SQLException {
-		String queryString = "insert into UserLikedPost (Email, PostID, Date, Time) VALUES('" + email + "','" + postID + "',CURDATE(),CURTIME())";
-		Statement statement = conn.createStatement();
-		statement.execute(queryString);
+		try (PreparedStatement ps = conn.prepareStatement("insert into UserLikedPost(Email, PostID, Date, Time) VALUES (?, ?, CURDATE(), CURTIME())")) {
+			ps.setString(1, email);
+			ps.setInt(2, postID);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	//Returnerer antall likes på en post
@@ -443,18 +456,29 @@ public class DatabaseQueryGenerator extends DBConn {
 	}
 
 	//Inserter en ny reply
-	public void insertReply(int postID, boolean anonymous, String text, String email) throws SQLException {
-		String queryString = "insert into Post (PostID, Text, Date, Time, IsAnonymous, Author) VALUES (null,'" + text + "',CURDATE(),CURTIME()," + anonymous + ",'" + email + "')";
-		conn.createStatement().execute(queryString);
+	public void insertReply(int postID, boolean anonymous, String text, String email) {
+		//insert post
+		try (PreparedStatement ps = conn.prepareStatement("insert into Post (Text, Date, Time, IsAnonymous, Author) VALUES (?, CURDATE(), CURTIME(), ?, ?)")) {
+			ps.setString(1, text);
+			ps.setBoolean(2, anonymous);
+			ps.setString(3, email);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		//get reply id
 		int replyID = Integer.parseInt(getLastInsertedID());
-		queryString = "insert into Reply (PostID, ReplyToID) VALUES (" + replyID + "," + postID + ")";
-		conn.createStatement().execute(queryString);
+
+		//insert reply
+		try (PreparedStatement ps = conn.prepareStatement("insert into Reply (PostID, ReplyToID) VALUES (?, ?)")) {
+			ps.setInt(1, replyID);
+			ps.setInt(2, postID);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public static void main(String[] args) {
-		var test = new DatabaseQueryGenerator();
-		String sql = test.buildPreparedInsertSql("User", "Email", "Password", "Username", "Type");
-		test.insert(sql, "insertEmail", "insertPassword", "InsertUsername", "Instructor");
-	}
 }
 

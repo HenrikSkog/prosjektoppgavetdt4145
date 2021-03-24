@@ -39,13 +39,7 @@ public class NewPostController {
 		if(selectedTag.equals("No tag"))
 			selectedTag = null;
 
-		int isAnonymous = 0;
-
-		if(anonymousBox.isSelected()) {
-			isAnonymous = 1;
-		}
-
-		queryGenerator.insertThreadPost(titleInput.getText(), textInput.getText(), selectedTag, isAnonymous);
+		queryGenerator.insertThreadPost(titleInput.getText(), textInput.getText(), selectedTag, anonymousBox.isSelected());
 
 		Program2Controller.reload();
 	}

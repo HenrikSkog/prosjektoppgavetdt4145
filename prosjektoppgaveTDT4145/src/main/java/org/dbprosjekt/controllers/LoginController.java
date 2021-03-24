@@ -55,7 +55,6 @@ public class LoginController {
                 isAdmin = rs.getString("Type").equals("instructor");
             }
             Session.setAdmin(isAdmin);
-            System.out.println("Signed in");
             Session.setUserID(email);
 
             Program2Controller.initialize();
