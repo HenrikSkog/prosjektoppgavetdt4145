@@ -19,6 +19,6 @@
         <Button fx:id="back" layoutX="700" layoutY="100" onAction="#goBack" text="Back" />
       <TextField fx:id="linkInput" layoutX="98.0" layoutY="427.0" promptText="Initial post in thread ID" />
       <Text layoutX="98.0" layoutY="416.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subject discussed in another thread? Link to it here" />
-      <Text fx:id="errorText" layoutX="100.0" layoutY="474.0" strokeType="OUTSIDE" strokeWidth="0.0" text=""/>
+      <Text fx:id="errorText" layoutX="100.0" layoutY="474.0" strokeType="OUTSIDE" strokeWidth="0.0" />
     </children>
 </AnchorPane>

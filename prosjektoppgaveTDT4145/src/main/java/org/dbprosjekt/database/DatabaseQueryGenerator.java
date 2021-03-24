@@ -81,9 +81,9 @@ public class DatabaseQueryGenerator extends DBConn {
 		return data.get(0).get(0);
 	}
 
-	public ArrayList<ArrayList<String>> getTotalUserStats() throws SQLException {
 	//Returnerer en tabell med email, antall posts brukeren med denne emailen har sett og antallet vedkommende har opprettet
-	public ArrayList<ArrayList<String>> getTotalUserStats() {
+	public ArrayList<ArrayList<String>> getTotalUserStats() throws SQLException {
+
 		String queryString = "SELECT q1.Email, viewedPosts, createdPosts FROM (select User.email as Email, count(U.Email) as viewedPosts from User left outer join UserViewedThread U on User.Email = U.Email group by User.Email) q1 left outer join (select Author as Email, count(*) as createdPosts from Post group by Author) q2 on q1.Email = q2.Email order by viewedPosts desc;";
 
 		var rs = query(queryString);
@@ -197,6 +197,7 @@ public class DatabaseQueryGenerator extends DBConn {
 		return false;
 	}
 
+	//Returnerer true dersom det finnes en threadpost med IDen
 	public boolean threadPostExists(String postID) {
 		try {
 			var returnVal = queryHasResultRows("select PostID from ThreadPost where PostID="+postID);
@@ -226,7 +227,7 @@ public class DatabaseQueryGenerator extends DBConn {
 		}
 	}
 
-	//Returnerer en insert-statement med gitte verdier
+	//Returnerer en postID som er linket gjennom PostLink
 	public String getLinkedPost(String PostID) {
 		try {
 			String queryString = "select LinkID from PostLink where PostID=" + PostID;
@@ -245,6 +246,7 @@ public class DatabaseQueryGenerator extends DBConn {
 		return null;
 	}
 
+	//Returnerer en insert-statement med gitte verdier
 	public String buildInsert(String table, String... values) {
 		String start = "insert into " + table + " values(";
 		for(String val: Arrays.asList(values)) {
@@ -300,6 +302,7 @@ public class DatabaseQueryGenerator extends DBConn {
 		}
 	}
 
+	//Inserter en relasjon mellom to posts der den ene linker til den andre
 	public void insertPostLink(String fromPostID, String toPostID) {
 		try {
 			Statement statement = conn.createStatement();
