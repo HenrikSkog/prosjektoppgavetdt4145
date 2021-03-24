@@ -1,8 +1,6 @@
 package org.dbprosjekt.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -11,16 +9,13 @@ import org.dbprosjekt.database.DatabaseQueryGenerator;
 import org.dbprosjekt.database.Session;
 
 import java.sql.SQLException;
+
 //Kontrollerer oppretting av nye replies
 public class ReplyController {
-    @FXML
-    private Button back;
     @FXML
     private CheckBox anonymous;
     @FXML
     private TextArea replyText;
-    @FXML
-    private Text path;
     @FXML
     private TextField linkInput;
     @FXML
@@ -28,7 +23,7 @@ public class ReplyController {
 
     @FXML
     //Oppretter en ny reply på den posten bruker trykket reply på
-    private void postReply(ActionEvent actionEvent) throws SQLException {
+    private void postReply() throws SQLException {
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
 
         if(!linkInput.getText().equals("")) {
@@ -49,12 +44,12 @@ public class ReplyController {
             String replyid = queryGenerator.getLastInsertedID();
             queryGenerator.insertPostLink(Integer.parseInt(replyid), Integer.parseInt(linkInput.getText()));
         }
-        Program2Controller.reload();
+        ProgramController.reload();
     }
     @FXML
     //Går tilbake til hovedvinduet
-    private void goBack(ActionEvent actionEvent) throws SQLException {
-        Program2Controller.reload();
+    private void goBack() throws SQLException {
+        ProgramController.reload();
     }
     @FXML
     //Sjekker og setter mulighet for anonyme posts

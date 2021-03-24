@@ -22,7 +22,7 @@
          </font>
       </Text>
       <TableView fx:id="threadtable" layoutX="589.0" layoutY="181.0" prefHeight="394.0" prefWidth="423.0" />
-      <Text layoutX="152.0" layoutY="168.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Most active users" />
-      <Text layoutX="589.0" layoutY="168.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Most active threads" />
+      <Text layoutX="152.0" layoutY="168.0" strokeType="OUTSIDE" strokeWidth="0.0" text="All time most active users" />
+      <Text layoutX="589.0" layoutY="168.0" strokeType="OUTSIDE" strokeWidth="0.0" text="All time most active threads" />
    </children>
 </AnchorPane>

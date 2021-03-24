@@ -1,16 +1,12 @@
 package org.dbprosjekt.controllers;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
-import org.dbprosjekt.App;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 //Kontrollerer oppretting av nye posts
 public class NewPostController {
@@ -41,13 +37,13 @@ public class NewPostController {
 
 		queryGenerator.insertThreadPost(titleInput.getText(), textInput.getText(), selectedTag, anonymousBox.isSelected());
 
-		Program2Controller.reload();
+		ProgramController.reload();
 	}
 
 	@FXML
 	//Går tilbake til hovedvinduet
 	public void back() throws SQLException {
-		Program2Controller.reload();
+		ProgramController.reload();
 	}
 
 	@FXML
@@ -56,11 +52,7 @@ public class NewPostController {
 		var queryGenerator = new DatabaseQueryGenerator();
 		boolean allowsAnon = queryGenerator.currentCourseAllowsAnonymous();
 
-		if(!allowsAnon) {
-			anonymousBox.setDisable(true);
-		} else {
-			anonymousBox.setDisable(false);
-		}
+		anonymousBox.setDisable(!allowsAnon);
 
 		tags.setValue("No tag");
 		tags.setItems(

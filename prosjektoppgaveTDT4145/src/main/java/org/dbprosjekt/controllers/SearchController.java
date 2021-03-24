@@ -1,22 +1,17 @@
 package org.dbprosjekt.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import org.dbprosjekt.App;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
-import org.dbprosjekt.database.Session;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 
 //Kontrollerer søk etter nøkkelord
@@ -38,7 +33,7 @@ public class SearchController {
                     if(!queryGenerator.queryHasResultRows(queryString)){
                         if(!postIDs.contains(id)){
                             queryString = "select * from ThreadPost as TP inner join ThreadInFolder as TIF on TP.PostID=TIF.PostID inner join Post as P on P.PostID=TP.PostID inner join User on P.Author=User.Email and P.PostID='"+id+"'";
-                            nodes.addAll(Program2Controller.postsFromResultSet(queryGenerator.query(queryString)));
+                            nodes.addAll(ProgramController.postsFromResultSet(queryGenerator.query(queryString)));
                         }
                         postIDs.add(id);
                         break;
@@ -51,16 +46,13 @@ public class SearchController {
         }
         VBox vBox = new VBox();
         ScrollPane scrollPane = new ScrollPane(vBox);
-        vBox.getChildren().addAll(Program2Controller.nodeListToArray(nodes));
+        vBox.getChildren().addAll(ProgramController.nodeListToArray(nodes));
         Button back = new Button("Back");
-        back.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                try {
-                    Program2Controller.reload();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
+        back.setOnAction(actionEvent -> {
+            try {
+                ProgramController.reload();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
         });
         Text title = new Text("Search results");

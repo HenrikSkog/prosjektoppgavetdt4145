@@ -1,6 +1,5 @@
 package org.dbprosjekt.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
@@ -32,13 +31,13 @@ public class SubjectController {
         }
         else{
             queryGenerator.insertSubject(id, name);
-            Program2Controller.reload();
+            ProgramController.reload();
         }
     }
     @FXML
     //Endrer scene til "hovedvinduet"
-    private void goBack(ActionEvent actionEvent) throws SQLException {
-        Program2Controller.reload();
+    private void goBack() throws SQLException {
+        ProgramController.reload();
     }
     @FXML
     //Setter staten til progreammet på toppen av vinduet

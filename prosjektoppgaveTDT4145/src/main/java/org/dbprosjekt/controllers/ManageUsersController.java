@@ -1,6 +1,5 @@
 package org.dbprosjekt.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
@@ -29,7 +28,7 @@ public class ManageUsersController {
 
     @FXML
     //Promoterer en bruker dersom den finnes og ikke allerede er instructor
-    private void promoteUser(ActionEvent actionEvent) throws SQLException {
+    private void promoteUser() throws SQLException {
         String email = promoteEmail.getText();
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
         String queryString = "select * from User where Email ='" + email + "'";
@@ -48,7 +47,7 @@ public class ManageUsersController {
     }
     @FXML
     //Legger en bruker til i et course dersom den finnes og ikke allerede er i courset
-    private void addToCourse(ActionEvent actionEvent) throws SQLException {
+    private void addToCourse() {
         String email = addEmail.getText();
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
         String queryString = "select * from User where Email ='"+email+"'";
@@ -66,7 +65,7 @@ public class ManageUsersController {
     }
     @FXML
     //Fjerner en bruker fra et course dersom brukeren finnes og er med i courset.
-    private void removeFromCourse(ActionEvent actionEvent) throws SQLException {
+    private void removeFromCourse() {
         String email = removeEmail.getText();
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
         String queryString = "select * from User where Email ='"+email+"'";
@@ -84,8 +83,8 @@ public class ManageUsersController {
     }
     @FXML
     //Går tilbake til hovedvinduet
-    private void goBack(ActionEvent actionEvent) throws SQLException {
-        Program2Controller.reload();
+    private void goBack() throws SQLException {
+        ProgramController.reload();
     }
     @FXML
     //Setter staten til progreammet på toppen av vinduet

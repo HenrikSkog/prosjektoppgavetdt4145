@@ -1,13 +1,11 @@
 package org.dbprosjekt.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
 import org.dbprosjekt.database.Session;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 //Kontrollerer oppretting av et nytt Course
@@ -26,7 +24,7 @@ public class CourseController {
     private Spinner<Integer> semYear;
 
     //Oppretter et nytt course dersom det ikke allerede eksisterer og IDen allerede finnes i Subject i databasen
-    public void createCourse() throws IOException, SQLException {
+    public void createCourse() throws SQLException {
         String id = courseIDInput.getText();
         String sem = ((RadioButton)semester.getSelectedToggle()).getText();
         int year = semYear.getValue();
@@ -44,13 +42,13 @@ public class CourseController {
         else{
             queryGenerator.insertCourse(id, term, allows);
             queryGenerator.insertInCourse(Session.getUserID(), id, term);
-            Program2Controller.initialize();
+            ProgramController.initialize();
         }
     }
     @FXML
     //Endrer scene til hovedvinduet
-    private void goBack(ActionEvent actionEvent) throws SQLException {
-        Program2Controller.reload();
+    private void goBack() throws SQLException {
+        ProgramController.reload();
     }
     @FXML
     //Setter staten til progreammet på toppen av vinduet

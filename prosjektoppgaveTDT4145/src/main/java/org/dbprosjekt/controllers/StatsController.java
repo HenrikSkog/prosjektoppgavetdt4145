@@ -1,5 +1,6 @@
 package org.dbprosjekt.controllers;
 
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,7 +30,7 @@ public class StatsController {
 	@FXML
 	//går tilbake til hovedvinduet
 	public void back() throws SQLException {
-		Program2Controller.reload();
+		ProgramController.reload();
 	}
 
 	@FXML
@@ -43,7 +44,7 @@ public class StatsController {
 		ObservableList<UserRow> data = FXCollections.observableArrayList();
 
 		stats.forEach(user -> {
-			data.add(new UserRow(user.get(0), user.get(1), user.get(2)));
+			data.add(new UserRow(user.get(0), Integer.parseInt(user.get(1)), Integer.parseInt(user.get(2))));
 		});
 
 
@@ -62,7 +63,7 @@ public class StatsController {
 
 		//daily active users
 		String activeUsers = queryGenerator.getDailyActiveUsers();
-		activeUsersText.setText("Daily active users: " + activeUsers);
+		activeUsersText.setText("Users active today: " + activeUsers);
 
 		//about threads
 		//most active threads
@@ -72,6 +73,7 @@ public class StatsController {
 		//list with [title, viewed, repliedto]
 		var mostActiveThreads = new ArrayList<ArrayList<String>>();
 
+		//combining mostViewed and mostReplied to one list to easier create threadData-objects
 		mostViewedThreads.forEach(thread -> {
 			var curr = new ArrayList<String>();
 			curr.add(thread.get(1));
@@ -83,7 +85,7 @@ public class StatsController {
 		ObservableList<ThreadRow> threadData = FXCollections.observableArrayList();
 
 		mostActiveThreads.forEach(thread -> {
-			threadData.add(new ThreadRow(thread.get(0), thread.get(1), thread.get(2)));
+			threadData.add(new ThreadRow(thread.get(0), Integer.parseInt(thread.get(1)), Integer.parseInt(thread.get(2))));
 		});
 
 
@@ -103,13 +105,13 @@ public class StatsController {
 	//representerer en rad i tabellen som viser data og brukere
 	public class UserRow {
 		SimpleStringProperty username;
-		SimpleStringProperty postsViewed;
-		SimpleStringProperty postsCreated;
+		SimpleIntegerProperty postsViewed;
+		SimpleIntegerProperty postsCreated;
 
-		public UserRow(String username, String postsViewed, String postsCreated) {
+		public UserRow(String username, int postsViewed, int postsCreated) {
 			this.username = new SimpleStringProperty(username);
-			this.postsViewed = new SimpleStringProperty(postsViewed);
-			this.postsCreated = new SimpleStringProperty(postsCreated);
+			this.postsViewed = new SimpleIntegerProperty(postsViewed);
+			this.postsCreated = new SimpleIntegerProperty(postsCreated);
 		}
 
 		public String getUsername() {
@@ -117,12 +119,12 @@ public class StatsController {
 		}
 
 
-		public String getPostsViewed() {
+		public int getPostsViewed() {
 			return postsViewed.get();
 		}
 
 
-		public String getPostsCreated() {
+		public int getPostsCreated() {
 			return postsCreated.get();
 		}
 
@@ -130,11 +132,11 @@ public class StatsController {
 			this.username.set(username);
 		}
 
-		public void setPostsViewed(String postsViewed) {
+		public void setPostsViewed(int postsViewed) {
 			this.postsViewed.set(postsViewed);
 		}
 
-		public void setPostsCreated(String postsCreated) {
+		public void setPostsCreated(int postsCreated) {
 			this.postsCreated.set(postsCreated);
 		}
 	}
@@ -142,13 +144,13 @@ public class StatsController {
 		//representerer en rad i tabellen som viser data om threads
 		public class ThreadRow {
 		SimpleStringProperty title;
-		SimpleStringProperty viewedTimes;
-		SimpleStringProperty commentedTimes;
+		SimpleIntegerProperty viewedTimes;
+		SimpleIntegerProperty commentedTimes;
 
-		public ThreadRow(String username, String postsViewed, String postsCreated) {
+		public ThreadRow(String username, int postsViewed, int postsCreated) {
 			this.title = new SimpleStringProperty(username);
-			this.viewedTimes = new SimpleStringProperty(postsViewed);
-			this.commentedTimes = new SimpleStringProperty(postsCreated);
+			this.viewedTimes = new SimpleIntegerProperty(postsViewed);
+			this.commentedTimes = new SimpleIntegerProperty(postsCreated);
 		}
 
 		public String getTitle() {
@@ -156,12 +158,12 @@ public class StatsController {
 		}
 
 
-		public String getViewedTimes() {
+		public int getViewedTimes() {
 			return viewedTimes.get();
 		}
 
 
-		public String getCommentedTimes() {
+		public int getCommentedTimes() {
 			return commentedTimes.get();
 		}
 
@@ -169,11 +171,11 @@ public class StatsController {
 			this.title.set(title);
 		}
 
-		public void setViewedTimes(String viewedTimes) {
+		public void setViewedTimes(int viewedTimes) {
 			this.viewedTimes.set(viewedTimes);
 		}
 
-		public void setCommentedTimes(String commentedTimes) {
+		public void setCommentedTimes(int commentedTimes) {
 			this.commentedTimes.set(commentedTimes);
 		}
 	}

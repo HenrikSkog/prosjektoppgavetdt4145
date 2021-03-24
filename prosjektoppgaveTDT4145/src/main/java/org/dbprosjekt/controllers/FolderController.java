@@ -1,6 +1,5 @@
 package org.dbprosjekt.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
@@ -28,12 +27,12 @@ public class FolderController {
         String name = folderNameInput.getText();
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
         queryGenerator.insertFolder(name);
-        Program2Controller.reload();
+        ProgramController.reload();
     }
     @FXML
     //Går tilbake til hovedvinduet
-    private void goBack(ActionEvent actionEvent) throws SQLException {
-        Program2Controller.reload();
+    private void goBack() throws SQLException {
+        ProgramController.reload();
     }
     @FXML
     //Setter staten til progreammet på toppen av vinduet
@@ -42,7 +41,7 @@ public class FolderController {
     }
     @FXML
     //Sletter folderen programmet befinner seg i dersom det befinner seg i en.
-    private void deleteFolder(ActionEvent actionEvent) throws SQLException {
+    private void deleteFolder() throws SQLException {
         if(Session.getCurrentFolderID()==0){
             deleteError.setText("No folder selected");
             return;
@@ -50,11 +49,11 @@ public class FolderController {
         DatabaseQueryGenerator queryGenerator = new DatabaseQueryGenerator();
         queryGenerator.removeFolder(Session.getCurrentFolderID());
         Session.setFolderID(0);
-        Program2Controller.reload();
+        ProgramController.reload();
     }
     @FXML
     //Endrer navnet på folderen programmet befinner seg i dersom det befinner seg i en.
-    private void renameFolder(ActionEvent actionEvent) throws SQLException {
+    private void renameFolder() {
         if(Session.getCurrentFolderID()==0){
             renameError.setText("No folder Selected");
             return;

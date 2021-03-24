@@ -1,13 +1,11 @@
 package org.dbprosjekt.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import org.dbprosjekt.database.DatabaseQueryGenerator;
 import org.dbprosjekt.database.Session;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -29,9 +27,6 @@ public class LoginController {
     private TextField regUsernameTextInput;
 
     @FXML
-    private Button signInButton;
-
-    @FXML
     private Text errorText;
 
     @FXML
@@ -39,7 +34,7 @@ public class LoginController {
 
     @FXML
     //Logger inn dersom brukernavn og passord matcher en rad i user oppdaterer samtidig Session med email og isAdmin, for så å initialize hovedvinduet
-    private void signIn() throws IOException, SQLException {
+    private void signIn() throws SQLException {
         String email = emailTextInput.getText();
         String password = passwordTextInput.getText();
 
@@ -57,7 +52,7 @@ public class LoginController {
             Session.setAdmin(isAdmin);
             Session.setUserID(email);
 
-            Program2Controller.initialize();
+            ProgramController.initialize();
         }
         else {
             System.out.println("No such user");
@@ -67,7 +62,7 @@ public class LoginController {
 
     @FXML
     //Registerer en ny bruker dersom hverken epost eller brukernavn er i bruk, oppdaterer session og intializer
-    private void register() throws IOException, SQLException {
+    private void register() throws SQLException {
         boolean emailInUse = false;
         boolean usernameInUse = false;
 
@@ -95,7 +90,7 @@ public class LoginController {
             queryGenerator.insertUser(email, username, password);
             Session.setUserID(email);
             Session.setAdmin(false);
-            Program2Controller.initialize();
+            ProgramController.initialize();
         }
     }
 }

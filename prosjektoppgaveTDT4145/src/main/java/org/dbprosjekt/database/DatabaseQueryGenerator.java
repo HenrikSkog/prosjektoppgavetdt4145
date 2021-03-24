@@ -16,7 +16,8 @@ public class DatabaseQueryGenerator extends DBConn {
 
 	//Tar inn en query, sender denne til databasen og returnerer resultatet
 	public ResultSet query(String queryString) {
-		try (Statement statement = conn.createStatement()) {
+		try  {
+			Statement statement = conn.createStatement();
 			return statement.executeQuery(queryString);
 		} catch (Exception e) {
 			System.out.println("exception in query method with string " + queryString);
@@ -114,7 +115,7 @@ public class DatabaseQueryGenerator extends DBConn {
 	}
 
 	//Returnerer en tabell med id tittel antall views og antall replies for hver thread
-	public ArrayList<ArrayList<String>> getActiveThreads() throws SQLException {
+	public ArrayList<ArrayList<String>> getActiveThreads() {
 		//get views on posts
 		String queryString = "select TP.PostID, TP.Title, count(*) as num from ThreadPost TP join UserViewedThread UVT on TP.PostID = UVT.PostID group by TP.PostID;";
 		var rs = query(queryString);
@@ -122,6 +123,7 @@ public class DatabaseQueryGenerator extends DBConn {
 		return data;
 	}
 
+	//Returnerer et hashmap med hvor mange replies hver thread har
 	public HashMap<Integer, Integer> getMostRepliedToThreads() throws SQLException {
 		String queryString = "select * from ThreadPost as TP inner join Post as P on TP.PostID = P.PostID";
 		ResultSet rs2 = query(queryString);
@@ -164,7 +166,7 @@ public class DatabaseQueryGenerator extends DBConn {
 
 	//Inserter i UserViewedThread for alle threads i en gitt folder
 	public void insertThreadPostsViewedByUser(String FolderID) {
-		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("UserViewedThread", "Email", "CURDATE()", "CURTIME()", "PostID"));) {
+		try (PreparedStatement ps = conn.prepareStatement(buildInsertQuery("UserViewedThread", "Email", "CURDATE()", "CURTIME()", "PostID"))) {
 			var ids = getPostIDsInFolder(FolderID);
 			var email = Session.getUserID();
 
@@ -245,6 +247,7 @@ public class DatabaseQueryGenerator extends DBConn {
 		return null;
 	}
 
+	//returnerer en prepared sql insert query
 	private String buildInsertQuery(String table, String... values) {
 		String start = "insert into " + table + " (";
 		for (String val : Arrays.asList(values)) {
