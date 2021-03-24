@@ -11,6 +11,7 @@ public class DBConn {
     }
 
     //Oppretter en connection til databasen
+    //brukernavn og passord er bare brukt mot dette prosjektet så vi lar det ligge så dere kan prøve ut databasefunksjonaliteten
     public void connect() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
@@ -22,17 +23,8 @@ public class DBConn {
             dbConnString.append("&allowPublicKeyRetrieval=true");
             dbConnString.append("&serverTimezone=Europe/Oslo");
 
-//            dbConnString.append("jdbc:mysql://178.164.30.10:3306/");
-//            dbConnString.append("prosjektoppgavetdt4145");
-//            dbConnString.append("?useSSL=false");
-//            dbConnString.append("&allowPublicKeyRetrieval=true");
-//            dbConnString.append("&serverTimezone=Europe/Oslo");
-
-
-
 
             conn = DriverManager.getConnection(dbConnString.toString(), "halvor", "O^o]FcUwpHbIQ=^KXL!%HW6I");
-//            conn = DriverManager.getConnection(dbConnString.toString(), "root", "pAssord123");
         } catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException("Unable to connect", e);
