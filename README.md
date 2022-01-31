@@ -1,6 +1,6 @@
-## Prosjektoppgave i TDT4145 Datamodellering og databasesystemer.
+## Om prosjektet
 
-Dette prosjektet er min gruppes besvarelse på prosjektoppgaven vi fikk i faget Datamodellering og databasesystemer våren 2021. Oppgaven gikk ut på å lage et sosialt fora mye lignende Piazza. 
+Dette prosjektet er meg og Halvor Henriksens besvarelse på prosjektoppgaven vi fikk i faget Datamodellering og databasesystemer våren 2021. Oppgaven gikk ut på å lage et sosialt fora mye lignende Piazza. 
 
 ### Teknologi
 
