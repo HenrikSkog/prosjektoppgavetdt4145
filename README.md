@@ -7,4 +7,4 @@ Dette prosjektet er min gruppes besvarelse på prosjektoppgaven vi fikk i faget 
  - Java m/ JavaFX for grensesnittet
  - MySQL
 
-Utviklet i samarbeid med Halvor Linder.
+Utviklet i samarbeid med Halvor Linder Henriksen.
