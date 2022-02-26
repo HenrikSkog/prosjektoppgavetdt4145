@@ -24,7 +24,7 @@ public class DBConn {
 			dbConnString.append("&serverTimezone=Europe/Oslo");
 
 
-			conn = DriverManager.getConnection(dbConnString.toString(), "root", "test");
+			conn = DriverManager.getConnection(dbConnString.toString(), "root", "root");
 		} catch (Exception e) {
 			System.out.println(e);
 			throw new RuntimeException("Unable to connect", e);
